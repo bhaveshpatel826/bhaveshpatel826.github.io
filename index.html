@@ -56,3 +56,3261 @@ To become a successful professional in the field of Linux Environment and to be 
 <p>Declaration:-<br />
 I do hereby declare that all the above information is true to best of my knowledge and belief.</p>
 <p>Place:Mumbai _________ (Bhavesh Patel)</p>
+
+
+
+i shal be up before you are awake, i shall be at field before you are up.
+
+rsync -avihP -e "ssh -p 1422" 128.199.162.222:/home/bhavesh/vagrant vagrant
+
+rsync -avihP --progress -e "ssh -p 1422" vishnu.byteoflinux.com:/home/bhavesh/AWS_SYSOP .
+
+###Docker commands####
+usermod -aG docker bhavesh
+
+docker pull images --- pull images from the repos
+
+docker pull ubuntu -- pulls ubuntu specific images
+
+docker run -t -i imageid /bin/bash --- will get you a bash shell from the image
+
+dcoker ps		--- shows docker process
+
+docker ps -a 		--- shows all of the docker process
+
+docker run it --rm ubuntu /bin/bash	this will remove the image on exit
+docker run -it --rm -v /home/bhavesh:/mydocker ubuntu /bin/bash
+docker run -it --rm -v /home/bhavesh:/mydocker -u 1000:1000 ubuntu /bin/bash
+
+docker run -t -i --name bhavesh1 -v /root/mydocker:/mydock ubuntu /bin/bash
+The above command will create a instance with name bhavesh with mount /root/mydocker directory and it will mount it as mydocker on the instance... this image will be created using the ubuntu image.
+
+docker run -t -i --name bhavesh2 --volumes-from bhavesh1 ubuntu /bin/bash
+
+The above command will create bhavesh2 instance with all th volumes from bhavesh1
+
+
+docker run -it --rm -v $(pwd):/var/www/html apache2ctl -D FOREGROUND
+The above command will start apache with content of my pwd in /var/www/html/
+
+docker ps --no-trunc=true
+
+docker commit -a "bhavesh" -m "message" imageid newimagename
+
+docker run -d  --name="imagename" -p=80:80 imagename --- to expose a port from the docker container
+
+docker -H 192.168.122.15 -d & 		makes docker listen on network
+
+/var/lib/docker/aufs/diff 		location where docker images are stored
+
+alias dps="docker ps"
+
+docker exec -it 593c208b1466 /bin/bash		execute bash inside a container
+
+docker save -o /tmp/imagename.tar newimagename
+
+docker load -i /locationofthetarfile
+
+docker images are said to be build time construct and docker containers are said to be run time construct
+
+docker run --cpu-share=256
+docker run memory=1g
+docker run -d ubuntu:14.04.1 /bin/bash -c "ping 8.8.8.8"
+
+docker instances run as long as the process within itself runs. this can be checked as follows
+docker run -d ubuntu:14.04.1 /bin/bash -c "ping 8.8.8.8"
+now monitor this instance using docker top imageid
+
+docker inspect imageid
+
+doker attach imageid/imagename
+
+#### Creating private Registries ####
+docker push dockerhubusername/imagename
+
+docker run -d -p 5000:5000 registry		creates a docker registry
+
+
+#####Building docker images
+
+sample dockerfile
+
+FROM ubuntu:15.04
+MAINTAINER bhaveshpatel@gmail.com
+RUN apt-get update
+RUN apt-get install -y nginx
+CMD "echo","hello world"
+
+
+this file have to be saved as Dockerfile
+
+command to build 
+
+docker build -t helloworld:1.0
+
+https://www.digitalocean.com/community/tutorials/docker-explained-using-dockerfiles-to-automate-building-of-images
+
+#####################################
+#####################################
+
+
+
+MY Repo
+
+docker pull bhaveshpatel/byteoflinux
+
+for pushing a image to the repo we need to tag a image first
+
+docker tag imageid newimagename
+#####################################
+docker run -d -p 5000:5000 registry			running a registry container
+
+expose network port
+
+we can mention EXPOSE 80 in our Dockerfile
+
+docker port command shows the exposed port 
+
+docker run -d -p 5001:80 --name=web1 apache-image	this run a container from apache image and expose port 80
+
+docker run -d -P --name=web2 webserver			"-P" will expose all the ports mention in the docker file.
+
+
+#####################################
+linking containers					only works for connecting containers
+
+
+#####################################
+Docker Daemon Logging
+
+docker -d -l debug &					This will start docker log
+
+to start loging at the start up
+vim /etc/default/docker
+add this to it 
+DOCKER_OPTS="--log-level=fault"
+
+
+Containter Logging
+
+docker logs imagename
+
+#####################################
+incase docker bridge endsup having the same ip thats already in use in our network, so we need to take another range for our docker network.
+
+take down the bridge
+
+vim /etc/default/docker
+DOCKER_OPTS=--bips=192.168.150.1/24
+
+up the bridge again
+
+#####################################
+By default all the container on the same docker host can talk to each other. This is govern by few parameters in the config file.
+
+--icc=		& 	--iptables=
+
+to stop containers from talking to each other
+vim /etc/default/docker
+
+DOCKER_OPTS=--icc=false
+
+&
+
+DOCKER_OPTS=--icc=false --iptables=true
+
+--iptables=true 		means docker can't change the iptables rule
+
+
+both the above command can be checked using iptables
+#####################################
+
+
+
+
+#####################################
+
+
+Docker Clustering unisg swarm
+
+swarm installation
+
+sudo apt-get install -y golang
+
+export GOPATH=~/go
+mkdir ~/go
+install git 
+go get -u github.com/docker/swarm
+PATH=$PATH:~/go/bin
+
+
+swarm create
+
+0371e652795c0d173e6f79c06eeaacca
+
+swarm join token://0371e652795c0d173e6f79c06eeaacca --addr 192.168.122.81:2375
+
+swarm manage token://0371e652795c0d173e6f79c06eeaacca -H 0.0.0.0:4243 &
+
+6efd75a089190e1e8d90e86db53e79f6
+
+
+#####################################
+
+What is java class file
+
+The Java class file is a precisely defined format for compiled Java. Java source code is compiled into class files that can be loaded and executed by any JVM
+
+What is jvm
+
+Java virtual machine (JVM), an implementation of the Java Virtual Machine Specification, interprets compiled Java binary code (called bytecode) for a computer's processor (or "hardware platform") so that it can perform a Java program's instructions.
+
+ps -auxf | grep  '/usr/sbin/httpd' | grep "^root" | awk '{ print $2 }'
+
+1012,1032s/^/#/g ###################### Multiple line together in vim
+
+
+Creating New certificate using openssl
+
+openssl req -new -x509 -nodes -out server.crt -keyout  server.key
+					#			#
+					#			#
+					#			#
+
+EOF				     Publickey		   Privatekey		
+############
+
+A Linux machine with ext2 filesystem if it crashed then at reboot, kernel would have to scan the entire filesystem for corrupt files. EXT3 has something called as journalingm what it does is this, When a kernel open a file for any operation it marks the file as open in the filesystem so at the time of system crash it just has to check the authencity of those particular files.
+
+EXT4 has option of ecnrypting the filesystem at the time of installation.
+
+EOF 
+############
+APache and tomcat integration using proxypass
+
+Below line is to be added in apache configuration
+ProxyPass / "http://tomcat.technotronix.com:8080/"
+ProxyPassReverse / "http://tomcat.technotronix.com:8080/"
+
+EOF
+#########################
+Apache website clustering using proxypass Load balancer
+
+<Proxy balancer://mycluster>
+BalancerMember http://ob.technotronix.com/openbravo
+BalancerMember http://ob1.technotronix.com/openbravo
+</Proxy>
+ProxyPass /test "balancer://mycluster/"
+
+#########################
+Virtual hosts in tomcat (Serving mutliple webapps wit different hostname in tomcat )
+
+Tomcat server.xml layout
+<server>
+	<Service name="Catalina">
+		<Engine name="Catalina">
+			<Host name="localhost">		-----> we are concern about this
+			</Host>
+		</Engine>
+	</Service>
+</server>
+		
+You have toedit this line rarther add mor line like this
+
+<Host name="www.bhavesh.com"  appBase="bhavesh_webapps" -----> Webapps is the direcotry
+            unpackWARs="true" autoDeploy="true"/>		where the context of this 
+<Host name="www.patel.com"  appBase="patel_webapps"		virtual host is stored
+            unpackWARs="true" autoDeploy="true"/>
+<Host name="www.bkp.com"  appBase="bkp_webapps"
+            unpackWARs="true" autoDeploy="true"/>
+
+
+#########################
+Difference between mod_jk and proxypass
+
+mod_proxy
+:Pros
+      o No need for a separate module compilation and maintenance. mod_proxy,
+        mod_proxy_http, mod_proxy_ajp and mod_proxy_balancer comes as part of 
+        standard Apache 2.2+ distribution
+      o Ability to use http https or AJP protocols, even within the same 
+        balancer.
+* Cons:
+      o mod_proxy_ajp does not support large 8K+ packet sizes.
+      o Basic load balancer
+      o Does not support Domain model clustering
+
+mod_jk
+
+* Pros:
+      o Advanced load balancer
+      o Advanced node failure detection
+      o Support for large AJP packet sizes
+* Cons:
+      o Need to build and maintain a separate module
+########################
+
+
+#########################
+Apache and tomcat integration using mod_jk
+
+
+1) Install apache and make sure mod_rewrite and mod_proxy modules are available to apache
+
+2) Download and Install the mod_jk connector
+	untar the source code of tomcat-connectors-1.2.41-src.tar.gz
+3) cd tomcat-connectors-1.2.41-src/native
+	
+4) start the mod_jk compilation process Incase apxs is not installed you need to install it .
+
+* apxs is a tool for building and installing extension modules for the Apache HyperText Transfer Protocol (HTTP) server. This is achieved by building a dynamic shared object (DSO) from one or more source or object files which then can be loaded into the Apache server under runtime via the LoadModule directive from mod_so.
+  Install apache2-dev for debian based os and httpd-devel for rhel based os. Once apxs is successfully install, we can continue with mod_jk compilation.
+
+	cd /tomcat-connectors-1.2.41-src/native
+
+	./configure --with-apxs=/usr/sbin/apxs  		Incase if gcc is not install it will throw errors, make sure it is installed.
+	sudo make
+	sudo make install
+	
+	
+5) Make sure the module has been installed by checking into /usr/lib64/httpd/modules, But you still need to mention about the module in apache conf file.
+	LoadModule jk_module modules/mod_jk.so
+
+6) Configuring JK Connector:-
+	
+	a)Create a worker.properties in /etc/httpd/conf/ with following content
+
+		worker.list=tomcat,tomcat2
+		worker.tomcat.type=ajp13
+		worker.tomcat.host=192.168.122.30
+		worker.tomcat.port=8009
+	 
+       	  	worker.tomcat2.type=ajp13
+                worker.tomcat2.host=192.168.122.31
+                worker.tomcat2.port=8009
+	
+	b)Make entry in httpd.conf
+	
+		JkWorkersFile 	"conf/worker.properties"
+		JkLogfile	"logs/jk.log"
+		
+		JkMount /mytomcat*              tomcat2
+		JkMount /sample*                tomcat
+
+Now it should work fine webserver/mytomcat ------------> will open tomcat2
+			webserver/sample   ------------> will open tomcat	
+
+7) Incase if you want to go further with the configuration and create virtual hosts for the same.
+	
+	Create virtual host for the above config in apache
+	
+	NameVirtualHost *:80
+	<VirtualHost *:80>
+	ServerName mytomcat.technotronix.com
+	JkMount /mytomcat*	tomcat2
+	</VirtualHost>
+	
+	<VirtualHost *:80>
+	ServerName sample.technotronix.com
+	JkMount /sample*	tomcat2
+	</VirtualHost>
+
+Make sure that mytomcat.technotronix.com and sample.technotronix.com are pointing to your webserver in dns.
+
+EVEN WITH THE ABOVE CONFIGURATION FOR VIRTUAL HOST, THINGS WON'T WORK AS WE NEED TO MAKE USE OF mod_rewrite module for url base regular expression catching.
+
+8) Proper virtual host config
+
+# Tomcat integration virtual host
+ NameVirtualHost *:80
+         
+       <VirtualHost *:80>
+                        ServerName mytomcat.technotronix.com
+                        RewriteEngine on
+                        RewriteLog logs/apache-mod_rewite
+                        RewriteRule ^/(.*)$ /mytomcat/$1 [l,PT]
+                JkMount /*      tomcat2
+        </VirtualHost>
+         
+        <VirtualHost *:80>
+                         ServerName sample.technotronix.com
+                         RewriteEngine on
+                         RewriteLog logs/apache-mod_rewite
+                         RewriteRule ^/(.*)$ /sample/$1 [l,PT]
+                 JkMount /*        tomcat
+         </VirtualHost>
+
+EOF
+###########
+Tomcat load balance using mod_jk
+
+1) We create worker.properties file with the following content
+
+	worker.list=balancer,stat
+
+	worker.tomcat.type=ajp13
+	worker.tomcat.host=192.168.122.30
+	worker.tomcat.port=8009
+	worker.tomcat.lbfactor=10
+
+	worker.tomcat2.type=ajp13
+	worker.tomcat2.host=192.168.122.31
+	worker.tomcat2.port=8009
+	worker.tomcat2.lbfactor=10
+	
+	worker.balancer(canbeanyname).type=lb
+	worker.balancer.balance_workers=tomcat,tomcat2
+	worker.stat.type=status
+
+Change in httpd.conf 		JkMount /* 	balancer
+				JkMount /status stat
+
+EOF
+########################
+
+Tomcat based session affinity load balancing:-
+
+Need to add jvmroute=workernamegiveninworker.properties under engine tag in server.xml in each worker's server.xml file according to the name given in worker.properties.
+
+by default its like this <Engine name="Catalina" defaultHost="localhost">
+
+According to my configuration what i will metion is below.
+
+tomcat instance server.xml	<Engine name="Catalina" defaultHost="localhost" jvmRoute="tomcat">
+tomcat2 instance server.xml	<Engine name="Catalina" defaultHost="localhost" jvmRoute="tomcat2">
+
+* BUT with this moodle of loadbalancing another issue arrises if a user has been using a instance and all his work has been given to one of the tomcat instance incase of failure of that tomcat instance, the data specific to the user connected to that instance will get lost. In this the user will be given a new session which is from another tomcat instance.
+
+EOF
+########################
+
+Activating tomcat manager role.
+In tomcat-user.xml file unxomment the user block and create a new user
+<user username="bhavesh" password="admin123" roles="manager-gui"/>
+
+EOF
+###########
+APACHE installation form source code:- 30-09-2015
+
+
+CASE 1 Fully dynamic webserver
+******
+./configure --with-apr=/usr/local/apr-httpd/ --with-apr-util=/usr/local/apr-util-httpd/ --prefix=/usr/local/apache2d/ --enable-mods-shared=all
+
+aprutil
+./configure --prefix=/usr/local/apr-util-httpd --with-apr=/usr/local/apr-httpd/
+
+apr-httpd
+./configure  --prefix=/usr/local/apr-httpd/
+
+make & make install 
+
+This will create a fully dynamic webserver, only the required modules are in core and other compiled as shared.
+
+
+CASE2
+******
+Fully dynamic webserver with mod_userdir builtin staticlly
+
+
+./configure --with-apr=/usr/local/httpd/apr-httpd --with-apr-util=/usr/local/apr-util-httpd/ --prefix=/usr/local/apache2d/ --enable-mods-shared=all -enable-userdir=static
+
+
+CASE3
+******
+Fully dynamic webser with mod_userdir disabled
+
+./configure --with-apr=/usr/local/httpd/apr-httpd --with-apr-util=/usr/local/apr-util-httpd --prefix=/usr/local/apache2d --enable-mod-shared=all --disable-userdir
+
+
+CASE4
+******
+Fully dynamic server webserver with all the modules being staticly compiled
+
+./configure --with-apr=/usr/local/apr-httpd --with-apr-util=/usr/local/apr-util-httpd --prefix=/usr/local/apache2/ --enable-mods-static=all
+#####################################################################################
+Url to file system Mapping:-
+1. Publish content form various locations in and outside if the filesystem.
+2.
+
+ALias | ScriptAlias (CGI)
+
+3. USe AliasMatch with Regular expression
+	
+	AliasMatch ^/docs/(.*pdf) /var/www/docs2/$1
+
+
+#####################################################################################
+
+Redirection
+Features:
+1) Sends Client to new destination
+2) Update Browser || Http caller url
+3) Remaps: URL-Path beginning with '/' ton new url (scheme and hostname | /path)
+4) Implementation of: 'mod_alias' as Redirect,RedirectMatch, RedirectPermanent,
+ RedirectTemp
+5) Take precedence over: Alias bases directives regardless configuration 
+6) Default Status = 302 (Temporary ) if unspecified
+7) Supports codes in the range of 300-399 (standard redirection codes) && 410
+8) common Codes:-
+ a) 301 = pemanent
+ b) 302 = temporary
+9)Usage: Redirect [Match|Permanent|Temp] [status] URL=path URL
+
+Redirect 301 /docs http://192.168.122.121/docs2
+	  \
+	   \
+           Code for Permanent redirect
+
+RedirectMatch ----supports Regexs
+
+RedirectMatch (.*)\.doc $1.pdf		-- applies .pdf substitution across the site
+RedirectMatch /docs/(.*)\.doc  /PDF/$1.pdf	places client into '/PDF' directory
+
+##
+Htaccess
+Features:
+1. Indirect site control via: FTP, SFTP, etc- via clients i.e Dreamweaver, Filezilla, etc.
+2. On-demand, configuration updates toyour site managed by apache
+3. Useful in the event that you lack 'root' access to manipulate the server;s configuration
+4. Substitute for: <Directory></Directory> Directives
+Note: We need not include <Directory. tags because '.htaccess' files are per directory
+5. Recursive control of direcoty branches
+6. Per-directory granular control
+7. Caveat: Performance impacts as Apache must read each .htaccess file per directory
+ per request
+8. Choice of file name - Driven by 'AccessFilName' directive
+9. Permitted Directives are restricted by:'AllowOverride' directive --specified in server's main configuration.
+10. Ideal for shared webserver environment
+
+Every request via .htaccess genrate disk io
+whereas, <Directory> blocks are cached
+
+##
+Content negotiation
+ 
+
+
+
+
+########################################## APACHE MPMS ######################################
+
+
+
+
+
+
+
+
+
+
+##############
+
+
+Server Hardening tips
+
+Disable  PermitRootLogin,AllowTCpForwarding,x11Forwarding in sshd config
+
+
+EOF
+###########
+
+LEARNING GIT	20-09-2015
+
+
+git init 			---- to initialize git 
+
+git status 			---- shows git status
+
+git add filename 		---- will add it to the repository
+
+git commit 			--- commiting the change
+
+git commit -m "message"		-commit without going into the editor
+
+git config --global user.name "bhaveshpatel"
+git config --global user.email "bhaveshpatel826@gmail.com"
+git config --global color.ui true
+git config --global --edit
+
+git log --graph --decorate --oneline --all --date-order
+git config --global merge.conflictstyle diff3
+git config --global core.editor vim
+git config --global --replace-all alias.l "log --graph --decorate --oneline -all --date-order"
+
+git diff 		--- to check diff in between the stage that is once you do git add after change the file and agian you change it but you don't add itm it will show you the difference
+
+git diff		---changes which are not staged
+
+git diff --cached	---changes which are staged
+
+git diff --staged
+
+git diff HEAD
+
+git diff HEAD show diff of all staged or unstaged changes
+
+If you want to see both staged and unstaged changes together, you can run git diff HEAD - this basically means you want to see the difference between your working directory and the last commit, ignoring the staging area. If we make another change to our hello.rb file then we'll have some changes staged and some changes unstaged. Here are what all three diff commands will show you:
+
+
+
+git diff --cached		---The git diff --cached command will show you what contents have been staged.
+
+git diff 1e13aa1 870d54b 	---Testing the diff between the commits
+
+git diff master newbranch 	---test the difference between two branch
+
+git diff master newbranch --name-only		only shows the files which are different
+
+git diff master newbranch --stat	same info but littel bit more
+
+
+
+Branches are kind of pointer to the commit
+
+git branch
+
+git branch branchname
+
+git checkout branchname		to checkout a branch and you switch to the given branch name
+
+git tag 0.1.0 
+
+git stash
+
+git checkout master
+git merge feature	we merged feature into master, but you need to switch to master branch its like joing feature to master, so you need to be in master first and then merge feature to it.
+
+git push -u origin master
+
+git branch test			--would create a test branch
+ 
+Incase you want to ingnore some files from the git directory that you need to create the .gitignore file inside that dir.
+
+https://github.com/github/gitignore
+
+Files in the staging area cannot be deleted unless you do a force remove.
+			touch deleteme.txt
+			git add deleteme.txt
+			git rm deleteme.txt
+			Its not gonna allow you to delet the deleteme.txt file
+			error:'deleteme.txt' has changes staged in the index
+	Then you have to forcefully delete it i.e	git rm -f deleteme.txt
+
+git log
+git log --pretty=oneline
+
+git log --pretty=format:"%h : %an : %ar : %s"
+			%h 	shows the hash
+			%an	show who created the file
+			%ar	date it was changed
+			%s	show the first line of the file
+
+git log -p -2			show the log for last 2 commit
+git log --stat			shows abbreviated log
+git log --since=1.weeks		shows log since last week
+git log --since="2015-09-21"	shows log since the mentioned date
+git log --befor="any date"	shows log before the mentioned date
+
+git commit --amend		allows you to change the previously made commit
+
+Incase if you decide to stage a file and you do the command git add filename and later you realise that you dont want to stage it you issue this command to over come this:-	git reset HEAD filename
+
+git commit -m "commit message format"
+Best parctice to follow the below mentioned format
+	1)exactly the problem which also acts as a heading
+	2)In a paragraph format describe the original problem that was addressed.
+	3)Then go on to describe the result of the change.
+	4)Any future improvements
+
+
+git remote -v 			--show remote repos name
+git pull remoterepoaddress	
+
+git remote rename origin sf		--- this will rename the git remote directory from origin to sf
+
+Creating a tag for my previous commit, commit that i just made.
+git tag -a 0.2 -m "Version 0.2"
+
+ Now say that we have a previous commit how are we going to add a tag to those commits
+	1)List out all of your commits on to the screen 		git log --pretty=oneline
+	2)Copy the hash (just few charcters) foreg:-
+		
+	Below are my commits,
+
+	bhavesh@workstation:~/mydocs$ git log --pretty=oneline
+	46c9c20323e163f44a07cc629bdb47b59ab718e3 dailycommit
+	983455e4fcfd3a857201d2a0c250cf427bb4301f aftersomeadded git command
+	7674f67b2819538e46a5038490c69e7d040c140d antohertestcommitonbitbucket
+	eecae0df034ef58ff0547d669b03d3c411d9095f mypersonaldoc
+	
+	3) Now we want to tag  7674f67b2819538e46a5038490c69e7d040c140d antohertestcommitonbitbucket
+	4) git tag -a v0.5 7674f67b28
+
+You can also push the tags to the remote repo
+
+git push reponame v0.5
+git push reponame --tags		That will add all the tags to the repo
+
+Creating aliases for Git commands.
+
+git config --global alias.co commit		---This creates alias "co" for "commit"
+
+How to clone a git repository
+
+git clone remoterepoaddress
+for eg:-
+git clone https://github.com/bhaveshpatel826/Python.git
+
+Branching In git means taking the project in your own direction without affecting the the master code. So that you can go an work with the code without potentially introducing unstable code to the master branch.
+
+
+git diff master new-branch --name-only  list only the file which are different.
+git diff master new-branch --stat
+git stash			adds a file to a stashing area
+git stash list 			shows all the stashed objects
+git stash show stashname	
+git stash show stashname -p  	shows everything in detail
+git diff stashname1 stashname2	shows the diff between these 2
+
+git stash clear			clears all the stashes
+
+git stash save "message"
+
+git stash apply			apply the recent stash
+
+################################################
+Creating github pages
+
+create a new repository with your username on github
+
+ 
+
+########################################################t LEARNING NAGIOS 09-10-2-15################################################################
+
+Defaults checks are perfomed every 5 minutes
+
+Checks:-
+Active (Default, Nagios-Initiated) Passive (externally-initiated) checks are supported
+
+Nagios allows us to monitor OBJECTs
+
+objects:-
+a:- Host --- physical and or virtual
+b:- Services --- http,smpt,dns,
+c:- Contacts --- Defined for notification purposes
+d:- Commands --- eg:- command that changes dns entry when a host is down
+e:- Timeperiod-- When a particulat host should be checked, when a particular host is
+		 notified
+
+Supports notifications:-
+a) SMS
+b) E-mail
+c) Custom -- ie write to a file, log to db, log to file for syslog server
+
+Notification Schedules (notification_period)
+Notification States (notification_options)
+Paralled monitoring (service | host checks) : i.e Nmap|Nessus
+Extensible via plugins eg nrpe (nagios remote plugin executor)
+
+Has split (Distributed) Configuration files
+	Main (Nagios.cfg) ---Nagios Daemon (core)
+	Objects -host|Hostgropups|Services | Contacts | Contact Group | commands ,etc
+	Resources -Data that should not be ready by the cgi 
+	cgi webinterface
+
+
+Nagios INSTALLATION & CONFIGURATION:-
+
+1)Configures required items, including Apache HTTPD
+2)Auto-monitoring of localhost
+
+Note:-Postfix or similar mta is required
+
+nagios.cfg primary config file for nagios Core
+	cfg_file -specifies config file to include i.e hosts, serviecs, contacts, etc.
+	cfg_dir	 -specifies directory to include, containing config files (*.cfg) to
+		  process.
+
+
+/usr/lib/nagios/plugins each command are systm binaries that reside in this directory.
+
+Starting with the monitoring:--
+
+By default nagios monitors itself.
+
+ICMP(PING) Moniotring
+1) Ping Monitoring using /usr/lib/nagios/plugins/check_host  --> check_icmp
+
+This basic check_assumes ICMP PING (echo|request|reply) are supported by network
+
+If monitoring host reside on fpregin host then ensure ping capabilites at l3 level(router,switch)
+
+2) Predefined template ro handle most monitors
+ a)'generic-host' -checks target using ICMP with sensible defaults
+ b)'generic-host' - can be inherited by the host definition using 'use generic-host'
+
+3) Host and various object are read from '/etc/nagios3/conf.d'
+ a) default localhost.cfg as a template can be used
+
+NOTE:-CGI and NAgios do not update hostlist on the fly
+
+4) check_interval to the monitoring host config in conf.d directory
+	check_interval 2
+
+5) hosts are maintained on a rolling basis and may not necessarily be checked simultaneously
+
+TCP| UDP Monitoring
+1) Directly monitors publicly accessible services published
+2) Check commands 'check_*' can be run manually from shell to confirm
+
+Many services i.e mysql will run with unix daemon sockets excluslively and that this configuratio prohibits tcp|UDP access
+
+Monitoring services based on tcp services:-
+example for ssh and http service
+
+# check that web services are running
+define service {
+        hostgroup_name                  http-servers
+        service_description             HTTP
+        check_command                   check_http
+        use                             generic-service
+        notification_interval           0 ; set > 0 if you want to be renotified
+}
+
+# check that ssh services are running
+define service {
+        hostgroup_name                  ssh-servers
+        service_description             SSH
+        check_command                   check_ssh
+        use                             generic-service
+        notification_interval           0 ; set > 0 if you want to be renotified
+}
+
+Nagios Remote Process Executor (NRPE)
+Features:
+ 1) Ascertain local data:
+  a) CPU Load
+  b) RAM
+  c) Current Users
+  d) Disk Usage
+ 2) Supports
+  a) Direct (runs loacl checkks via NRPE tunnel)
+  b) Indirect (runs common checks via NRPE tunnel) 
+eg:- If nagios monitor instance does'not have access to target services NRPE
+	(Indirect) mode works well.
+ 3)Restrcited set of command may run on the target: '/etc/nagios/nrpe.cfg'
+ 4)Ability to execute remote plugins
+ 5)Supports SSL connections (DEFAULT)
+ 6)Supports Clear-Text using: '-n' options with:'check_nrpe'
+ 7)Uses TCP:5666 - Open on firewall
+ 8)Implemented ass 2 components:
+  a) Client - Runs on monitoring server
+  b) Server - Runs on the target (Monitored) Server
+
+Tasks:-
+1. Install NRPE Server - Target Server - Runs NRPE Daemon - Requires  'nagios-plugins' 	  package
+ a) Install nagios-nrpe-server
+ b) /etc/nagios/nrpe.cfg update allowed_hosts to permit nagios monitoring server access
+2. Install NRPE - CLient  - Monitoring Server
+ a) apt-get install nagios-nrpe-plugin
+	/etc/nagios-plugins/config/check_nrpe.cfg
+	/usr/lib/nagios/plugins/check_nrpe
+3. Run Checks Manually From Nagios Server to Confirm Functionality.
+Note:- Default communication uses SSL
+
+eg:-
+/usr/lib/nagios/plugins/check_nrpe -H 192.168.122.70 -c check_vda1
+/usr/lib/nagios/plugins/check_nrpe -H 192.168.122.70 -c check_total_procs
+
+Object Groups:-
+Features
+ 1) Grouping of commonly classed objects: hosts, services, contacts, etc.
+ 2) Visual representation in CGI
+ 3) Configuration ingeritance: ie Services mapped to HostGroups
+ 4) Defaults are /etc/nagios3/conf.d/hostgroups.cfg
+
+Task:-
+ 1) Extend the default admins to include other contacts
+ 2) Add another block of 
+
+	define contact{
+        contact_name                    bhavesh
+        alias                           linuxadmin
+        service_notification_period     24x7
+        host_notification_period        24x7
+        service_notification_options    w,u,c,r
+        host_notification_options       d,r
+        service_notification_commands   notify-service-by-email
+        host_notification_commands      notify-host-by-email
+        email                           bhaveshpatel826@gmail.com
+
+        }
+
+	The above blocke can be edited as per our requirement.
+
+
+
+Make sure you make the new contact the member of the contact gorup.
+
+define contactgroup{
+        contactgroup_name       admins
+        alias                   Nagios Administrators
+        members                 root,bhavesh
+
+By creating another bloxk of the same code you can create another contact group
+
+define contactgroup{
+         contactgroup_name       Helpdesk
+         alias                   Nagios Administrators
+         members                 root,bhavesh
+
+###
+
+service_notification_period can be edited from the timperiodconfig file
+
+###
+
+Create hostgorups, add members to it and then add these hostgorups to the 
+services groups, so all the members of the hostgourps will be acquire these services
+
+
+sudo nagios3 -v /etc/nagios3/nagios.cfg
+
+
+###################################################### Learning Iptables 23-09-2015 ################################################################
+
+Iptables is an front end to manage Netfilter which is integrated with kernel
+Iptables function primarily at  osi layer 3(Network) and 4(Transport)
+Iptables can manage icmp protocol which tends to operate at 3 and 4 layer of osi
+Iptables comes along with various modules which increase itse functionality, and which can be loaded dynamically on the fly.
+
+There are 3 default tables which cannot be deleted
+	a) mangle -- alter packets withing tcp/icmp/udp/etc
+
+	b) NAT	  -- to change source/dest to another souce/dest
+ 
+	c) Filter -- Ip packet filtering (INPUT,FORWARD,OUTPUT)
+
+iptables consist of tables within the table there are chains and with the chainsther are rules
+
+
+*ACL SYTNAX
+
+a)Make use of iptables command for constructing iptables based rules
+	b)itpables  commands
+	1)name of the chain - action what to do ( Append/Insert/Replace)
+	2) name of the table --magle/nat/userdefined
+	3)(filter),src/dest address)
+	4)dest ports/src ports (optionally) -p --sport/--dport
+	5)Jump/Target  -j ACCEPT/DROP/DENY/REJECT/LOG
+
+for eg:- BLock source ip from communicating to our system
+	iptables -A INPUT -s 192.168.55.1 -j DROP
+iptables  append to input chain source 192.168.55.1 jump target drop
+
+* Saving and Restoring Rules via text files
+a)iptables-save 	Dumps rules on the screen you need to redirect it.
+b)iptables-restore	You can restore for a file
+
+iptables -F  	Flush all the rules in all the chain in filter table.
+
+c) To restore rules use iptables-restore < firewallrules.txt
+d) To save rules use iptables-save > firewallrules.txt
+
+Chain Mgmt In varios tables (Mangle/filter/nat/user-defined)
+
+iptables -L 	will list the filter tables showing three chains
+iptables -L -t nat this will list nat table
+iptables -L -t mangle
+iptables -L -v 		shows the number of packets have passed
+iptables -L -v -n --line-numbers shows numbers for the rules
+
+for eg:-
+permit ssh
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+deny telnet
+iptables -A INPUT -p tcp -dport 23 -j DROP
+
+adding a rule on a particular line number so that it can be matched accordingly
+
+iptables -I INPUT 1 -p tcp --dport telnet -j DROP  this will insert the rule at 						   1 place in INPUT chain
+
+Deleting and replacing rules
+
+iptables -D INPUT 3	this will delete the rule on 3
+
+iptables -R INPUT 2 -p tcp --dport 23 -j ACCEPT	this will replace the 2 rule and 						replace from the given rule.
+Flushing the rules:-
+
+iptables -F		flushes rules for all the chains
+
+iptables -Z INPUT	this will zero a given chain
+
+Creating a user defined tables
+
+packet processing in iptabels happens from top to down
+
+iptables -N INTRANET		this will create a new chain as intranet
+
+iptables -A INPUT 1 -s 192.168.122.0/24 -j INTRANET
+
+any traffic belonging to 192.168.122.0 subnet it will be sent to intranet chain
+we can carry on further processing from there on
+
+user defined chains must have unique names
+
+example rule in user made chain
+
+iptables -A INTRANET -p tcp --dport 23 -j DROP
+
+iptables -E INTRANET EXTRANET 	renames the userdefined chain
+
+Defining default chain policy
+
+iptables -P INPUT DROP 		default policy is set to drop
+
+Iptables  Matching
+
+-s;	-src ;	--source;	-->for matching any source
+-d;	-dst ;	--destinition;	-->for matching any dest
+
+iptables -A INPUT -i eth1 -s 192.168.122.0/24 -j DROP
+
+Thte above rule will block any traffic  from 192.168.122.0/24 coming from eth1 interface.
+
+TCp works on layer 4 (transport layer) Connection oriented
+UDP works on layer 5 (transport layer) Connection less
+
+Udp based application:- TFTP(booting system/updating infrastructer)
+			Syslog
+			NTP
+			DHCP binds on udp 67 and udp 68
+
+ICMP--- Internet control messaging protocol
+
+What happens when a system ping a remote machine.
+ICMP TYPES:-
+	a)echo-request	= ping
+	b)echo-reply	= pong
+
+PING - local system sends a "echo-request" via its OUTPUT chain.
+Remote machine receives the "echo-request" on its INPUT chain.
+Remote machine then respond with a "echo-reply" which the enters our INPUT chain.
+
+If i drop echo-reply in INPUT chain then i won't be able to ping to anyone.
+If i drop echo-request in INPUT chain then nobody will be able to ping me.
+
+
+-p icmp  --icmp-type name/number 
+iptables -p icmp --help  this show the list of option that can be given with iptables using icmp
+
+To avoid writing of too many rules we can make use of multiport option in iptables 
+
+iptables -A INPUT -p tcp -m multiport --destination-port 22,8080 -j DROP
+
+This wil match both the port 22,8080 in one signle rule. For this kind of rule both the port should belong to same categorym tcp,tcp will work tcp,udp won't work
+
+Matching on the basis of mac address
+
+iptables -A INPUT -p tcp -m mac --mac-source lskdjfls -j drop
+
+iptables is considered as a statefull firewall becoz its able to track the connection that flows thtough the firewall. so matche can be perform based on the states of varios services passing through the firewall.
+
+IPtables states:- NEw,ESTABLISHED,RELATED,INVALID
+
+iptables -A INPUT -p tcp --dport 22 -m state --state NEW -j DROP	This will drop any new ssh connection but old ssh session for this machine will be there.
+
+iptables -A INPUT -p tcp --src 192.168.122.99 --dport 22 -m state --state NEW -j DROP 	This rule will block new connection form 192.168.122.99, but present connection will 												persistent#
+
+IPtables LOGGING
+
+iptables -A INPUT -p tcp --dport 22 -j LOG 		This will log all the said traffic for port 22
+
+log for packets coming for you system the log in INPUT
+log for packets routed thorugh your system then log in Forward chain
+
+route add -net 192.168.5.0 netmask 255.255.255.0 gw 192.168.122.1
+
+creating a linux machine into a router 
+echo 3 > /proc/sys/net/ipv4/ip_forward
+
+
+iptables -R FORWARD 2 -m state --state NEW,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -s 192.168.122.0/24 -d 192.168.5.20 -j ACCEPT
+
+#####################
+Added in my workstation 	route add -net 192.168.5.0 netmask 255.255.255.0 gw 192.168.122.22
+
+iptables -A FORWARD -p all -s 192.168.122.0/24 -d 192.168.122.20 -j ACCEPT	This will allow traffic form 122.0 to 5.20 
+iptables -A FORWARD -p all -d 192.168.122.0/24 -s 192.168.5.20 -j ACCEPT -----> To allow reverse traffic from 192.168.5.20 to 192.168.122.0/24 network
+#####################
+
+rsync -avihP --progress -e "ssh -p 1422"  128.199.162.222:/home/bhavesh/Linuxacademy linuxacademy
+
+######################
+
+Network Address Transalation:-
+
+Taking ip addresss of one subnet and you mask them to some other subnet that is consider to be masquerading.
+
+Nat table:-
+Nat table contains 3 chains
+
+Prerouting:- Packet that are destined to the system that is accessible to the router
+		rules written in this chain DNAT
+
+Postrouting:- Masquerading and source nating
+
+Output: - Locally source packet
+
+
+Masquerade:-
+
+iptables -t nat -A POSTROUTING -j MASQUERADE -s 192.168.5.0/24 -d 192.168.122.0/24
+
+http://www.slashroot.in/linux-nat-network-address-translation-router-explained
+
+
+###############################Learning AWS 5-10-2-15##############################
+
+VPC, EC2, ELB, Route53, RDS, S3, ElasticCache
+
+
+Amazon storage basics:-
+
+1) AMaozon s3 its  a scalable files/obkect storage. these objects can be movie files,pdfs,images,mp3s. Objects can be from 1 byte ot 5tb, And you can store unlimited amount of data.
+you can have multi threaded uploads from different source to your same aws account. you can have servers side encryption. you can server static content for your webpage. and it will server it in high available environment. Has a life cycle policy which allows to assign a policy to a bucket, you can integrate it with glacier. we can also use versioning
+
+2) GLacier:-
+	1) Glacier is an archiving storage type you use it for storing infrequently accessd		data, becoz it takes 2-6 hours to actually retrive data from glacier. 				only cost 1cent a gigabyte.
+		You can integrate a policy in s3 which automaticly syncs you backups to 		glacier
+
+3) EBS:-1)Its a block storage device you can write filesystem on it,
+	2)EBS is redundant but its only redundant to your availibility zone.
+	3)Need to customize it for creating a highly available architecture out of ebs.
+	
+* NOTE
+
+S3 when you add an object it add the object within all the availibility zones. so your data is highly available and highly redudant within the region. Is a very much region specific and not availiblity zone specific.
+
+Ephemeral storage:-
+	1) this is temporary storage data, its lost as soon as the machine is shutdown.
+
+
+Amazon security:-	AWS works on shared responsibility environment it means you as user			   are responsible for certain aspect of the security, and certain par			      is to be taken care by amazon.
+
+User Responsibility:- 1) user management and access
+			IAM (Identity Access Management)
+			Multifactor Authentication
+			Password/key Rotation
+			Trusted Advisor
+			Security Froups
+			Access Control Lists
+			VPC
+
+AWS Responsibilty:- 1)Host physical server level and below
+ 		    2)Physical Enivronment Secutiy/Protection: Fire/power/climate managemet
+		    3)Storage Device Decommissionin
+		    4)Network Devie Security and acls
+		    5)API access end points terminated with SSL for secure communication
+		    6)DDOS Protection		
+		    7)EC2 Instances cannot send spoofed data. aws does ingress and egress for a traffic genrating from ec2, they make sure the source is correct
+		    8)Port scanning is against the law in aws.
+	            9)Hypervisor isolation so instances on same physical host cannot talk to each other any how.
+
+
+AWS ESSential gloabl infrastructer:- 
+
+It consists of AWS Regions availablility zone and edge locations
+
+#############
+
+AMAZON S3
+
+#############
+
+ITS a highly availables by design, its an object storage it highly available coz it syncs your data across different availablity zone with in the region. which means if one availiblity zone becomes unavailable still your data is available.
+
+Its design for 11 nines durablilty  and 99.99% availablity.
+	Durablity means you r object is going to be there always
+	availablity is self explained.
+Cost:- cost per gig basis depends on your region, 12 cents a gig, also data out transfer is also charged. Data transfer within the same region is not chargeable. 
+
+You also have a RRS option in S3, which is you dont 11 nines durability where the availabilty remains the samem here you can store the data which is easily reproducable.
+
+Life cycle policies and object versioningL-
+	you can define a life cycle policy where in you mention the object after storing for certain amount of time automatically archive it to glacier storage or you can have it deleted.
+
+You can also enable versioning, you can have unlimited version of your objects.
+
+Once versoning has been enable on s3 bucket you can't disable it but you can suspend it.
+
+#############
+EC2 Instance types
+1)Ondemand instances:- these type of instances are created on demand say you want to test 3 instances of your application and you want to pay for just per hour than you can make use of on demand instance. high in price
+
+2)Spot instances:- AWS allow to bid for unused ec2 instances. but aws does'nt guarantee the avaialiblity of the instances. its realyy  cheap
+
+3)Reserverd Instances:-It guarantee you certain amt of processing power always available to you. eg - an application of your which demands certian compute 24/7 ,you know abt it and you want to provision something for the same, what you do is you purchase a reserve instance by paying a upfront amount which considerably lower than you ec2 ondemand instances. this reduces the cost by 30-40%
+ 3types of reserve instances:- Heavy,medium and light
+
+#############
+AWS IAM:-
+
+Best practice is to create a administrator account after aws account is created
+
+#############
+Creating nat instances
+
+1) create a nat security group
+
+# Every private subnet that needs to access the internet, we need to create a rule in this security group
+eg:- 10.0.3.0/24 is a private network that we want to get internet to get updates
+
+so we add 10.0.3.0/24 in inbound connection as source for http and https protocol
+
+in outbound allow http and https to destination to anywhere
+
+2)now we need to create a instance which will act as a nat router, there is a specific nat ami available for the same "amzn-ami-vpc-nat" WE CREATE THIS INSTANCE IN A PUBLIC SUBNET WHICH HAS A INTERNET GATEWAY ATTACHED TO IT.
+
+3)While creating the instance use the nat security group that we just created.
+
+4)Attach an elastic ip address to it.
+
+5)In ec2 dashboard disable the check source/dest check
+
+6)Edit the route table with is going to be attached to the private instances.
+ 
+ In th routes section in destination put 0.0.0.0/0 and target the "instance id of nat instance"
+
+#############
+
+
+
+################################## HAPROXY 7-10-2015 ##################################
+
+Differences Between Layer 4 and Layer 7 Load Balancing
+
+
+Layer 4 load balancing operates at the intermediate transport layer, which deals with delivery of messages with no regard to the content of the messages. Transmission Control Protocol (TCP) is the Layer 4 protocol for Hypertext Transfer Protocol (HTTP) traffic on the Internet. Layer 4 load balancers simply forward network packets to and from the upstream server without inspecting the content of the packets. They can make limited routing decisions by inspecting the first few packets in the TCP stream.
+
+Layer 7 load balancing operates at the high-level application layer, which deals with the actual content of each message. HTTP is the predominant Layer 7 protocol for website traffic on the Internet. Layer 7 load balancers route network traffic in a much more sophisticated way than Layer 4 load balancers, particularly applicable to TCP-based traffic such as HTTP. A Layer 7 load balancer terminates the network traffic and reads the message within. It can make a load-balancing decision based on the content of the message (the URL or cookie, for example). It then makes a new TCP connection to the selected upstream server (or reuses an existing one, by means of HTTP keepalives) and writes the request to the server.
+Benefits of Layer 7 Load Balancing
+
+Layer 7 load balancing is more CPU-intensive than packet-based Layer 4 load balancing, but rarely causes degraded performance on a modern server. Layer 7 load balancing enables the load balancer to make smarter load-balancing decisions, and to apply optimizations and changes to the content (such as compression and encryption). It uses buffering to offload slow connections from the upstream servers, which improves performance.
+
+A device that performs Layer 7 load balancing is often referred to as a reverse-proxy server.
+An Example of Layer 7 Load Balancing
+
+Let’s look at a simple example. A user visits a high-traffic website. Over the course of the user’s session, he or she might request static content such as images or video, dynamic content such as a news feed, and even transactional information such as order status. Layer 7 load balancing allows the load balancer to route a request based on information in the request itself, such as what kind of content is being requested. So now a request for an image or video can be routed to the servers that store it and are highly optimized to serve up multimedia content. Requests for transactional information such as a discounted price can be routed to the application server responsible for managing pricing. With Layer 7 load balancing, network and application architects can create a highly tuned and optimized server infrastructure or application delivery network that is both reliable and efficiently scales to meet demand.
+
+
+
+HAProxy Configuration
+
+HAProxy's configuration file is divided into two major sections:
+
+    Global: sets process-wide parameters
+    Proxies: consists of defaults, listen, frontend, and backend parameters
+
+
+
+#################################### Learning DATABASE###################################
+
+RDBMS
+
+RDBMS stands for Relational Database Management System.
+
+RDBMS is the basis for SQL, and for all modern database systems such as MS SQL Server, IBM DB2, Oracle, MySQL, and Microsoft Access.
+
+The data in RDBMS is stored in database objects called tables.
+
+A table is a collection of related data entries and it consists of columns and rows.
+
+
+Some of The Most Important SQL Commands
+
+    SELECT - extracts data from a database
+    UPDATE - updates data in a database
+    DELETE - deletes data from a database
+    INSERT INTO - inserts new data into a database
+    CREATE DATABASE - creates a new database
+    ALTER DATABASE - modifies a database
+    CREATE TABLE - creates a new table
+    ALTER TABLE - modifies a table
+    DROP TABLE - deletes a table
+    CREATE INDEX - creates an index (search key)
+    DROP INDEX - deletes an index
+
+
+*The SELECT DISTINCT statement is used to return only distinct (different) values.
+
+*The WHERE clause is used to extract only those records that fulfill a specified criterion.
+
+
+#Text Fields vs. Numeric Fields
+
+SQL requires single quotes around text values (most database systems will also allow double quotes).
+
+However, numeric fields should not be enclosed in quotes:
+
+##
+The SQL AND & OR Operators
+
+The AND operator displays a record if both the first condition AND the second condition are true.
+
+The OR operator displays a record if either the first condition OR the second condition is true.
+
+The SQL ORDER BY Keyword
+
+The ORDER BY keyword is used to sort the result-set by one or more columns.
+
+The ORDER BY keyword sorts the records in ascending order by default. To sort the records in a descending order, you can use the DESC keyword.
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@ Postgres
+
+creating a super user
+
+createuser -e -s U postgres bhavesh
+
+CREATE user agovil WITH PASSWORD 'Kh@rt0um';
+
+create a group
+CREATE GROUP dept;
+
+order to assign members/users to the group
+ALTER GROUP dept ADD USER agovil,nchabbra;
+
+To view groups
+select * from pg_group;
+
+In order to drop a database that has active connections to it, you will have to follow these steps:
+1. Identify all of the active sessions on the database. To identify all of the active
+sessions on the database, you need to query the pg_stat_activity catalog
+table as follows:
+SELECT * from pg_stat_activity where datname='testdb1';
+2. Terminate all of the active connections to the database. To terminate all of the active connections, you will need to use the pg_terminate_backend function as follows:
+SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'testdb1';
+3. Once all of the connections are terminated, you may proceed with dropping the
+database using the DROP DATABASE statement.
+
+To create the database cluster, use the initdb command:
+$ initdb -D /var/lib/pgsql/data
+Another way of initializing the database cluster is by calling the initdb command via the
+pg_ctl utility:
+$ pg_ctl -D /var/lib/pgsql/data initdb
+
+
+It is also possible to reload the configuration file while being connected to a PostgreSQL
+session. However, this can be done by the superuser only:
+postgres=# select pg_reload_conf();
+
+
+drop a user
+drop -e -U postgres bhavesh
+
+postgres is multi processed
+
+## Logging
+3 types of log
+a) stderr
+b) csvlog	import into spreadsheets | DBs
+c) syslog
+
+controlled via postgresql.conf
+ability to control verbosity
+automatic log rotation based on criteria: age | size
+stderr & csv based logs are stored in /dat/pg_log
+syslog based logs are not logged in here
+
+its is the first process launched by the master process
+
+## Data types
+1. allow us to control the type of data on per column basis
+
+types:-
+Numeric:
+ a) 'smallint' - 16-bits (2-bytes) whole numbers
+ b) 'int'	32bits	(4 bytes) wholenumbers
+ c) 'bigint' 	big integer 64 bits whole numbers only
+ d) 'numeric'[(precision,scale)]
+	d1. percision = sig figs
+	d2. scale = number of values to the right of the decimal point
+ e) 'real' - 32 bits -variable - 6 decimal digits of precision
+ f) 'double precision' -6-bits	- variable - 15 decimal digits of precision
+ g) 'serial' - 32-bits signed auto-incrementing
+ h) 'bigserial' 64 bits
+
+Money:-
+ a) 'money' -64 bits -
+
+Strings - text
+
+a. 'text' - varchar -unlimited preferred charcter storage type within postgres
+b. 'char(n)' fixed-length, blank-padded if value stored is < 'n'length
+ b1. i.e 'char(9)' - 'linuxcbt' --> stored as linuxcbt
+note char(n) truncates values that are > 'n' length
+ b2. i.e 'char' -> 'char(1)' - effectively becomes a 1-charchter field
+c. varchar(n) - variable length with n limit if n is present
+
+Dates & time - Uses 'Julian date (form 4713bc) '
+a. 'date' -32bits --date only willnot store time
+b. 'time' -64bits -- defaults to time without time zone -microsecond precision
+c. 'time with timezone' - 96-bits date and time with time zone microsecond precision
+d. 'timestamp with time zone' -64 bits 
+e. 'timestamp without timezone' -64 bits
+f. 'interval' -96 bits -range of time 
+
+Boolean - abits true 1 on | false 0 off
+
+Geometric Types - lines, circles, polygons, etc.
+Network Address Types
+ a. 'cidr' - 7 or 19 bytes ipv4 and ipv6
+ b. 'inet' -7 or 19 bytes ipv4 and ipv6 hosts and networks
+ c. 'macaddr' --48 bits i.e 52:54:00:20:6c:41
+ 
+xml
+arrays
+etc
+
+numeric,strings dates and types key data types.
+ 
+##Create
+1. Limited to 63 characters for the definition of objects 
+2. Identifies (dbobjects) must begin with alpha charcters
+3. Used to create db objects db,tables,indexes,functions, etc.
+
+Note PostgresSql Hierarchy
+1. DB
+ 2. -Schema(s) (Optional) one db may contain one or more schema. Default schema is 			       named public
+  3.  -Objects (Tables,Functions, Triggers, etc.)
+  
+Note ALl DBS have: 'public' and 'pg_catalog' schemas 
+Note All user|roles have 'Create' & 'Usage' access to the public schema for all dbs
+Note Create distinct schemas if security beyond 'public' is necessary
+
+Tasks:
+ 1. DB creation
+  a. Create a user named: 'linuxcbt' with 'createrole createdb' rights
+  a1. createuser -e -U postgres bhavesh
+  b. create a db named testing
+  b1. create database testing
+  c. Create a table named 'linuxcbtmessages'
+   c1. Create table linuxcbtmessages (date date);
+  d. Create a user named 'bhavesh2' with usage rights
+   d1. 'create role bhavesh2 login'
+  e. Create a schema named: logs
+   e1. create schema logs;
+
+Create database test template linuxcbt - templatedb name "linuxcbt"
+	no active sessions must be going in order for template process to work
+
+testing:--
+create database bhavesh
+create scheme bhavesh.logs
+create table bhavesh.logs.linuxcbtmessages (date date);
+
+schema created by one user in same database is not accessible to another user in the ssame database
+
+## ALter
+1. Changes Object (DB|Schema|Table|Index|etc.) --Name|Structure|Owner
+
+renaming a database:-
+alter database linuxcbt rename to linuxcbt2
+
+change db ownership:-
+alter database linuxcbt owner to username
+
+alter table linuxcbt rename to messages		changes the table name to messages
+
+#alter table stucter:- 
+	alter table messages alter column date set data type timestamp;
+		     (tablename)	(column) 
+
+alter table messages adds ident text; adds, sequentially to the end of the table 
+
+
+droppping a column will remove the data in it be aware
+alter table messages drop column if exists ident
+
+#alter role bhavesh superuser	this can be only given by superuser role
+
+for creating unique constrains for multiple fields
+#create table messages (date date, id bigint, messages text, unique(id,message));
+
+create table messages (date date, id int Primary key);
+
+foregin key id in messagescategories is linked to id in messages categories
+
+create table messagescategories (id int refernces messages(id), category text;)
+
+check constrains: - it check the given value for certain crieteria to match
+
+create table messages (date date NOT NULL, id numeric CHECK (id > 0));
+#####################################
+from postgrescbt
+#####################################
+###Features of PostgreSQL###
+
+1. Object Relational Database Management System (ORDBMS)
+ a. Objects can be related in a hierarchy: Parent -> Child
+
+2. Transactional RDBMS:
+Note: Transactional statements must execute: ALL or NONE
+  a. SQL statements have implicit: BEGIN; COMMIT; statements
+  b. SQL statements may also have explicit: BEGIN; COMMIT; statements
+
+3. Note/Feature:
+  a. Developed originally @ UC Berkeley
+
+4. One process per connection - auto-spawns per new connection
+  a. managed by master process: 'postmaster'
+
+5. Processes use only ONE CPU/Core
+  a. Note: OS/Distro may spawn new connection on a different CPU/core
+
+6. Multiple helper processes, which appear as 'postgres' instances, run always
+  a. Stats collector
+  b. Background writer
+  c. Autovacuum - clean-up/space reclaimer
+  d. WALsender - write ahead log
+
+7. Max DB Size: Unlimited - limited by OS & available storage
+Note: Consider deploying on 64-bit platform
+
+8. Max Table Size: 32TB - stored as multiple: 1GB files
+9. Max Row Size: 400GB
+10. Max Col Size: 1GB
+11. Max Indexes on a table: Unlimited
+12. Max Identifier (DB objects (table|column names, etc.): 63-bytes
+Note: The limitation is extensible via source code
+13. Default Listener: TCP:5432 
+  a. You may install PostgreSQL as a non-privileged user
+14. Users are distinct from OS users - i.e. MySQL
+15. Users are shared across DBs
+16. Inheritance 
+  a. Tables lower in hierarchy may inherit columns from higher tables
+  b. Caveat: No unique constraints or foreign keys support
+17. Case-insensitive commands - sans double quotes -i.e. 'select * from Syslog;'
+18. Case-sensitive commands - with double quotes - i.e. 'select & from "Syslog";'
+19. Three Primary Config Files: $POSTGRESROOT/data/*.conf
+  a. 'pg_hba.conf' - controls host/user/DB connectivity
+  b. 'postgresql.conf' - general settings
+  c. 'pg_ident.conf' - user mappings
+20. Integrated Log Rotation|Management - Log Collection - 'postgresql.conf'
+  a. Criteria: Age | Size
+
+###Installation###
+Features:
+ 1. Download bin file from Enterprise DB
+
+Tasks:
+ 1. Install
+Note: You may optionally indicate that data files be stored independently of the source tree
+Note: A 'Database Cluster' is simply the management of more than 1 DB
+Note: Default is to start the RDBMS post-installation
+
+ 2. Explore the footprint
+  a. 'psql' - terminal monitor - i.e. akin to 'mysql'
+  b. 'createdb|dropdb' - creates|drops DB
+  c. 'createuser|dropuser' - creates|drops users
+  d. 'postgres' - server daemon
+  e. 'data/' - top-level data/config files/log files
+  f. 'data/pg_log/' - log files (default is: STDERR)
+  g. 'data/pg_xlog/' - Write Ahead Log (WAL) - maintains changes to DB files at all times
+  h. 'data/postmaster.opts' - contains startup options
+  i. '/etc/init.d/postgresql-9.0' - INITD manager
+
+Note: Files, execpt INITD file, are contained within: /opt/postgresql/version hierarchy
+
+ 3. Provide access to docs via Apache
+  a. 'ln -s /opt/PostgreSQL/9.0/doc/postgresql/html ./LinuxCBT/postgresqldocs '
+
+ 4. Update: $linuxcbt/.bashrc to reflect: /opt/PostgreSQL/9.0/bin - to access binaries
+
+Note: PostgreSQL clients default to submitting the currently logged-in user's name as the DB user name
+Note: A workaround for this is to export the PGUSER variable, setting it to an existing DB user
+'export PGUSER=postgres'
+
+### 'psql' ###
+Features:
+ 1. (Non)Interactive usage - i.e. 'mysql' terminal monitor
+ 2. Command history - up|down arrows
+ 3. Tab completion
+ 4. Commands terminate with semicolon and may wrap lines and have whitespace separators
+ 5. Defaults to supplying the currently-logged-in user
+
+Tasks:
+ 1. Explore 'psql'
+  a. 'psql --version'
+  b. 'psql -l -U postgres' - lists DBs then exits
+Note: PostgreSQL installs 3 default DBs:
+ 1. 'postgres' - contains user accounts DB, etc.
+ 2. 'template0' - vanilla, original DB
+ 3. 'template1' - Copy of template0, and may be extended, and is used to generate new DBs
+  c. 'psql' - enters interactive mode
+   c1. trailing '#' indicates: super user: 'postgres'
+  d. '\h' - returns SQL-specific help
+  e. '\?' - returns 'psql'-specific help - i.e. usable metasequences
+  f. '\l[+]' - returns list of DBs
+  g. '\du[+]' - returns list of users in system DB
+  h. '\!' - returns user to $SHELL
+  i. '\! command' - executes a specific command - non-interactively
+Note: Typical $SHELL semantics apply
+  j. '\i filename' - executes command(s) in the file - i.e. 'psql' or SQL commands
+Note: Multiple commands can be run with one reference. Terminate set with: ';', use space between commands.
+
+  k. '\c DBNAME [REMOTE HOST]' - connects to different DB and optionally different host
+Note: current DB is echoed in the prompt. i.e. postgres=# || template1=#
+
+  l. '\d[S+]' - reveals tables, views, sequences and various DB objects
+  m. '\q' - quits
+
+
+###Access Controls###
+
+Features:
+ 1. Users - Roles (Roles are users or groups)
+ 2. Config Files:
+  a. 'pg_hba.conf | pg_ident.conf | postgresql.conf'
+ 3. Central accounts DB shared ALL DBs - accounts MUST be unique
+ 4. Default setup includes 1-User - 'postgres' - Super User
+ 5. Privileges are managed with: 
+   a. 'GRANT | REVOKE'
+   b. 'ALTER'
+   c. 'CREATE | DROP ROLE|USER'  - SQL Statements (Key Words)
+   d. 'createuser|dropuser' - commands - wrappers to SQL statements
+ 6. DB Object creators own those objects and can assign privileges to them
+ 7. To Change DB object ownership use: ALTER - sql key word
+ 8. Special role named: 'PUBLIC' grants assigned privilege to ALL system users
+  a. 'PUBLIC' is a special group, to which ALL users are members
+
+Tasks:
+ 1. Create another super user
+  a. '\du' - enumerates current users|roles
+  b. 'createuser -e -s -U postgres linuxcbt' - echoes SQL commands to STDOUT
+  c. Confirm inability to connect to posgres as new role: 'linuxcbt'
+  d. Set 'linuxcbt' password: '\password linuxcbt' - permits setting of user's password
+Note: Caveat: Upon connection to postgres, the client 'psql' attempts to connect the user to a DB named the $PGUSER
+
+ 2. Drop newly-created super user: 'linuxcbt'
+  a. 'dropuser -e -U postgres linuxcbt' - removes user from DBMS
+
+ 3. Examine remote, TCP-based connectivity
+
+
+###Logging###
+Features:
+ 1. Three types of logs supported: 
+   a. 'stderr'(Default)
+   b. 'csvlog' - import into spreadsheets | DBs
+   c. 'syslog'
+ 2. Controlled via: $POSTGRESROOT/data/postgresql.conf
+ 3. Simultaneous logging
+ 4. Ability to control verbosity
+ 5. Automatic log rotation based on criteria: age | size
+ 6. Logs handled by the included logger (stderr,csvlog) are stored in: $POSTGRESROOT/data/pg_log
+Note: Syslog-handled messages are routed according to syslog rules: /etc/rsyslog.conf
+ 7. The first process launched by master process
+
+Tasks:
+ 1. Explore: $POSTGRESROOT/data/postgresql.conf
+
+ 2. Configure syslog
+  a. Update syslog configuration for: 'LOCAL0' facility - Consider updating: LogRotate
+  b. Update: $POSTGRESROOT/data/postgresql.conf - 'stderr,syslog'
+ 
+ 3. Configure csvlog
+  a. Append: 'csvlog' to log_destination VAR: $POSTGRESROOT/data/postgresql.conf
+
+Note: Caveat: Syslog is UDP-based and is subject to loss of messages
+
+
+### Common Data Types ###
+Features:
+ 1. Allow us to control the type of data on a per column basis
+
+Types:
+ Numeric:
+  a. 'smallint' - 16-bits (2-bytes) - whole numbers
+  b. 'int' - integer - 32-bits (4-bytes) - whole number
+  c. 'bigint' - Big Integer - 64-bits - whole numbers only
+  d. 'numeric[(precision,scale)]'
+   d1. precision = sig figs
+   d2. scale = number of values to the right of the decimal point
+Note: 'numeric' sans precision or scale supports up to: 1000 digits of precision
+  e. 'real' - 32-bits - variable - 6 decimal digits of precision
+  f. 'double precision' - 64-bits - variable - 15 decimal digits of precision
+  g. 'serial' - 32-bits (2^31) signed - auto-incrementing
+  h. 'bigserial' - 64-bits (2^63) - auto-incrementing
+
+ Money:
+  a. 'money' - 64-bits - 2^63 signed: i.e. -9EB - 9EB
+
+ Strings - Text
+  a. 'text' - varchar - unlimited - preferred character storage type within PostgreSQL
+  b. 'char(n)' - fixed-length, blank-padded if value stored is < 'n' length
+   b1. i.e. 'char(9)' - 'linuxcbt' -> stored as: 'linuxcbt '
+Note: char(n) truncates values that are > 'n' lenght
+   b2. i.e. 'char'-> 'char(1)' - effectively becomes a 1-character field
+  c. 'varchar(n)' - variable length with 'n' limit, if 'n' is present - Does NOT blank-pad
+   c1. i.e. 'varchar(9)' - 'linuxcbt' -> stored as: 'linuxcbt'
+   c2. i.e. 'varchar' -> variable length - Does NOT blank-pad
+
+Note: Use 'text' or 'varchar' when storing strings
+
+  Dates & Time - Uses 'Julian Dates (from 4713 BC) -> 10^5+ years ahead' - in date calculations
+   a. 'date' - 32-bits - date only
+   b. 'time' - 64-bits - defaults to time 'without time zone' - microsecond precision
+   c. 'time with time zone' - 96-bits - date & time with time zone - microsecond precision
+   d. 'timestamp with time zone' - 64-bits - ...
+   e. 'timestamp without time zone' - 64-bits - ...
+   f. 'interval' - 96-bits - range of time - microsecond precision
+
+  Boolean - 8-bits - True(1)(on) | False(0)(off)
+  Geometric Types - lines, circles, polygons, etc.
+  Network Address Types
+   a. 'cidr' - 7 or 19-bytes - IPv4 and IPv6 networks - i.e. '192.168.75.0/24' || '2002:4687:db25:2/64'
+   b. 'inet' - 7 or 19-bytes - IPv4 and IPv6 hosts and networks
+   c. 'macaddr' - 48-bits - i.e. 00:11:11:5b:70:53, 0011.115b.7053 , etc.
+  XML
+  Arrays
+  et cetera.
+
+
+###CREATE###
+Features:
+ 1. Limited to 63 characters for the definition of objects
+ 2. Identifiers (DB Objects) MUST begin with alpha characters
+ 3. Used to create: DBs, Schemas, Tables, Indexes, Functions, etc.
+
+Note: PostgreSQL Hierarchy:
+ 1. DB
+  2. -Schema(s) (Optional) - Default schema is named: 'public'
+   3.  -Objects (Tables, Functions, Triggers, etc.)
+Note: ALL DBs have: 'public' and 'pg_catalog' schemas
+Note: ALL users|roles have: 'CREATE' & 'USAGE' access to the 'public' schema for ALL DBs
+Note: Create distinct schemas if security beyond 'public' is necessary
+
+Tasks:
+ 1. DB Creation
+  a. Create a user named: 'linuxcbt' with 'CREATEROLE CREATEDB' rights
+  a1. 'createuser -e -U postgres linuxcbt'
+  b. Create a DB named 'linuxcbt'
+   b1. 'CREATE DATABASE linuxcbt;'
+  c. Create a Table named: 'linuxcbtmessages'
+   c1. 'CREATE TABLE linuxcbtmessages (date date);'
+  d. Create a user named 'linuxcbt2' with USAGE rights
+   d1. 'CREATE ROLE linuxcbt2 LOGIN;'
+  e. Create a SCHEMA named: 'logs'
+   e1. 'CREATE SCHEMA logs;'
+  f. Create a TABLE named: 'linuxcbtmessages' within the SCHEMA: 'linuxcbt.logs'
+   f1. 'CREATE TABLE logs.linuxcbtmessages (date date);'
+   f2. '\d linuxcbt.logs.linuxcbtmessages' - confirms the description of the table
+  g. Check whether user: 'linuxcbt2' has access to: 'linuxcbt.logs' SCHEMA
+
+
+###DROP###
+Features:
+ 1. Removes objects: DBs, Schemas, Tables, Functions, Triggers, etc. from ORDBMS
+ 2. Available from the $SHELL and within SQL interpreter: 'psql'
+
+Tasks:
+ 1. Drop DB 'linuxcbt2'
+Note: Objects that are currently in-use will NOT be dropped by default
+  a. 'drop database linuxcbt2;'
+Note: Dropping DBs will remove ALL sub-objects, including, but not limited to:
+ a. Schemas
+ b. Tables
+ c. Triggers
+ d. Functions, etc.
+
+ 2. Drop Tables
+  a. 'DROP TABLE linuxcbt2messages;' - removes table if current user is owner or SUPERUSER
+  b. 'DROP TABLE linuxcbtmessages;' - as user: 'linuxcbt2' - fails due to lack of permissions
+  c. 'CREATE DATABASE TEST TEMPLATE linuxcbt;' - templates DB named: 'linuxcbt'
+Note: No active sessions must be ongoing in order for template process to work to ensure consistency with duplicated DB
+  c. 'dropdb TEST'
+Note: Objects created within the 'public' schema are not readily accessible to other users sans the usage of the 'GRANT' command
+
+  d. Drop schema: 'linuxcbt.logs'
+   d1. 'DROP SCHEMA logs;' - fails because there is a dependent table: 'linuxcbtmessages'
+   d2. 'DROP SCHEMA logs CASCADE;' - forces recursive removal of objects
+
+  e. Re-create structure & DROP:
+   e1. 'CREATE DATABASE linuxcbt2;'
+   e2. '\c linuxcbt2 && CREATE SCHEMA logs'
+   e3. 'CREATE TABLE linuxcbt2.logs.linuxcbt2messages (date date);'
+   e4. 'DROP DATABASE linuxcbt2;'
+
+
+###ALTER###
+Features:
+ 1. Changes Object (DB|Schema|Table|Index|etc.) - Name|Structure|Owner
+
+
+Tasks:
+ 1. Confirm our environment by ensuring requisite objects
+ 2. Change DB Name
+  a. 'ALTER DATABASE linuxcbt RENAME TO linuxcbt2;'
+Note: ALTER should be used sans connections to target objects
+ 3. Change DB Ownership
+  a. 'ALTER DATABASE linuxcbt2 OWNER TO linuxcbt2;' - changes ownershipt to role: 'linuxcbt2'
+ 4. Test ability to DROP DB as new owner
+  a. 'DROP DATABASE linuxcbt2;'
+
+ 5. Create and Rename Table: 'linuxcbt2messages'
+  a. 'CREATE TABLE linuxcbt2messages (date date);' - creates table 'public.linuxcbt2messages'
+  b. 'ALTER TABLE linuxcbt2messages RENAME TO messages;'
+ 6. Alter Table Structure: 'messages'
+  a. 'ALTER TABLE messages ALTER COLUMN date SET DATA TYPE timestamp;'
+Note: Structurual (columnar) changes may result in data loss if target column type does NOT support source column data
+  b. 'ALTER TABLE messages ADD ident text;' - ADDS, sequentially, a new column to table
+Note: Column names MUST be unique and may not be added more than once
+  c. 'ALTER TABLE messages DROP COLUMN IF EXISTS ident;' - removes column named: 'ident' if exists
+Note: Be forewarned, that the dropping of a colum WILL remove existing DATA in the column
+
+ 7. ALTER existing ROLE
+  a. 'ALTER ROLE linuxcbt2 SUPERUSER;' - makes user 'linuxcbt2' a SUPERUSER
+Note: This will ONLY work if you execute as a SUPERUSER. i.e. 'postgres'
+  b. 'ALTER ROLE linuxcbt RENAME TO linuxcbt4;' - renames user: 'linuxcbt' TO 'linuxcbt4'
+Note: This will unset the user's MD5 password
+Note: This will update ownership of objects. i.e. DB::Test is now owned by: 'linuxcbt4'
+  c. 'ALTER ROLE linuxcbt4 RENAME TO linuxcbt;'
+
+
+###Constraints####
+Features:
+ 1. Enforce storage requirements: per table | column
+ 2. May be applied per column
+ 3. Multiple constraints may be bound to a single column
+ 4. Optionally, constraints may be defined at the table level for one or more columns
+ 5. Default column rule is to accept NULLs
+
+Data Types - basic constraint
+ a. Restricts permitted column values
+  i.e. 'date', 'smallint', 'char(9)', etc.
+
+Not-Null | NULL Contraints
+ a. Define a table using NOT NULL
+  a1. 'create table messages (date date NOT NULL);'
+ b. Alter table adding a new column (id) with constraint: NULL
+  b1. 'ALTER TABLE messages ADD id in NULL;'
+
+Unique Constraint - Applies to any type of column: i.e. 'int', 'numeric', 'text', etc.
+ a. Define a table with a UNIQUE 'id' column
+  a1. 'create table messages (date date, id bigint UNIQUE); '
+Note: The creation of UNIQUE contraints generates implicit btree indices on column(s)
+
+ b. Define table with multiple UNIQUE columns 
+  b1. 'create table messages (date date, id bigint, message text, UNIQUE(id,message) );'
+Note: This ensures that the combination of: 'id' && 'message' is unique
+Sample Records that do NOT break the UNIQUE contraint:
+2010-10-14 1 message
+2010-10-14 2 message
+2010-10-14 3 message
+
+Sample Records that DO break the UNIQUE contraint:
+2010-10-14 1 message
+2010-10-14 1 message
+2010-10-14 2 message
+
+Primary Key Constraint - Combination of: 'UNIQUE' & 'NOT NULL' Constraints
+ a. Create a table with primary key constraint on 1 column
+  a1. 'create table messages (date date, id numeric PRIMARY KEY); '
+ b. Create a table with primary key constraint on 2 columns
+  a1. 'create table messages (date date, id numeric, message text, PRIMARY KEY(id, message) ); '
+Note: Standard SQL recommends that each table contain a primary key
+
+
+Foreign Key Constraint - Links Tables - Referential Integrity
+ a. Create messages table as parent table
+  a1. 'create table messages (date date, id int PRIMARY KEY); '
+ b. Create subordinate table to categorize messages in parent table
+  b1. 'create table messagesCategories (id int REFERENCES messages(id), category text;'
+
+Check Constraint - confirms column values based on Boolean criteria:
+'CHECK (expr)'
+ a. Ensure that (id) contains values greater than 0
+  a1. 'create table messages (date date NOT NULL, id numeric CHECK (id > 0) );'
+ b. Create the same constraint with a name
+Note: If unnamed, PostgreSQL will auto-name the constraint
+  b1. 'create table messages (date date NOT NULL, id numeric CONSTRAINT positive_id CHECK (id > 0) ); '
+
+ c. Create CHECK constraint which summarizes ALL rules for ALL columns
+  c1. 'create table messages (date date, id numeric CHECK (date IS NOT NULL AND id > 0 AND id IS NOT NULL) ); 
+
+###INSERT###
+Features:
+ 1. Populates tables via various methods
+ 2. PostgreSQL inserts left-to-right
+
+Usages:
+ 1. Insert into table with precise number of columns
+  a. 'INSERT INTO messages VALUES ('2010-10-14','1');'
+ 2. Insert using specified field(s)
+  a. 'INSERT INTO messages (date) VALUES('2010-10-14');'
+ 3. Insert more columns than are defined in the table - WILL NOT WORK
+  a. 'INSERT INTO messages VALUES('2010-10-14', '5', 'Log Message'); '
+
+ 4. Insert multiple records wholesale
+  a. 'INSERT INTO messages VALUES ('2010-10-14','6'),('10/14/2010','7'),('10/14/2010', '8'); '
+Note: The date format in record 3 causes the entire transaction to fail, due to implicit:
+BEGIN & COMMIT statements
+
+ 5. Test Foreign Key Constraint
+  a. 'create table messagesCategories (id int REFERENCES messages(id), category text);'
+Note: Because messages table does not have UNIQUE or PRIMARY KEY constraints on (id) column, the Foreign Key constraint will fail
+Note: Rectify by defining a Primary Key on messages table OR inserting unique values into (id)
+Note: PostgreSQL raises error and denies creation of subordinate table
+
+  b. Insert data into dependent table
+   b1. 'INSERT INTO messagescategories VALUES ('4','VSFTPD'); ' - fails constraint
+   b2. 'INSERT INTO messagescategories VALUES ('3','VSFTPD'); ' - passes constraint
+Note: Foreign Key constraint need not be based on a numeric
+
+
+ 6. Test Primary Key Constraint
+  a. 'INSERT INTO messages VALUES ('10/14/2010','3');' - fails constraint
+  b. 'INSERT INTO messages VALUES ('10/14/2010','4'); - passes constraint
+Note: Summarizes both: UNIQUE & NOT NULL constraints
+
+
+
+###COPY Command###
+Features:
+ 1. Server-side command, unlike: '\copy' which is client-side
+ 2. Wholesale inserts (imports) | Exports from | to a file
+ 3. File MUST be on the server
+ 4. File MUST be viewable by the 'postgres' user
+ 5. Uses absolute $PATH to reference the file
+ 6. Defaults to importing based on: TAB separator|delimiter
+ 7. Able to copy the results of 'SELECT' query
+ 8. Does NOT work with VIEWS but will work with SELECT of VIEW
+ 9. Appends records to table
+
+Tasks:
+ 1. Generate Import File
+  a. 'for i in `seq 100`; do echo `date +%F` $i; done > ~linuxcbt/LinuxCBT_feat._PostgreSQL_Edition/messages.data'
+
+ 2. Import Data
+  a. 'COPY messages FROM '/home/linuxcbt/LinuxCBT_feat._PostgreSQL_Edition/messages.data' DELIMITER ' '; '
+Note: Truncate Table when necesary to clear data
+TRUNCATE table messages CASCADE; - removes data from dependent and parent tables
+
+  b. Vary delimiter
+   b1. 'awk '{ print $1","$2 }' messages.data ' - formats output with comma delimiter
+   b2. 'TRUNCATE table messages CASCADE;'
+   b3. 'COPY messages FROM '/home/linuxcbt/LinuxCBT_feat._PostgreSQL_Edition/messages.data.csv' DELIMITER ','; '
+
+ 3. Export Data
+  a. 'COPY messages TO '/home/linuxcbt/LinuxCBT_feat._PostgreSQL_Edition/messages.data.semicolon' DELIMITER ';';' - export with semicolon delimiter
+Note: Ensure that user: 'postgres' may write to target directory
+Note: Export does NOT append redirect, rather, it clobbers (overwrites) target file
+
+
+###SELECT###
+Features:
+ 1. Performs queries: i.e. calculations, system stats, data retrieval
+ 2. Retrieves data from objects: table(s), view(s), etc.
+
+Usage:
+ 1. 'SELECT * FROM messages; ' - Returns ALL rows from table: 'messages';
+ 2. 'SELECT rolname, rolcreaterole FROM pg_roles;' - returns just those 2 columns
+ 3. 'SELECT rolcreaterole, rolname FROM pg_roles;' - returns just those 2 columns, reversed
+ 4. 'SELECT rolname AS r, rolcreaterole AS rr FROM pg_roles;' - Constructs aliases for columns
+ 5. 'SELECT * FROM pg_roles WHERE rolname LIKE '%linuxcbt%';' - Simple string comparison
+ 6. 'SELECT * FROM messages ORDER BY id DESC;' - Changes sort order ON (id) column
+ 7. 'SELECT DISTINCT date FROM messages;' - Filters unique values per column, by not returning redundancies
+ 8. LIMITS & OFFSETS
+  Features: Ability to extract a subset of records using SELECT
+  Note: Use 'ORDER BY' clause when using 'LIMIT' to influence sort order because SQL does not guarantee sort order
+  a. 'SELECT * FROM messages ORDER BY id asc LIMIT 10;' - returns first 10 records
+  b. 'SELECT * FROM messages ORDER BY id desc LIMIT 10;' - returns last 10 records
+  c. 'SELECT * FROM messages ORDER BY id LIMIT 10 OFFSET 10;' - returns records: 11-20
+  d. 'SELECT * FROM messages ORDER BY id LIMIT 10 OFFSET 9;' - returns records: 10-19
+  e. 'SELECT * FROM messages ORDER BY id LIMIT 11 OFFSET 9;' - returns records: 10-20
+  f. 'SELECT * FROM messages ORDER BY id desc LIMIT 10 OFFSET 10;' - returns records: 90-82
+
+
+###JOINS###
+Features:
+ 1. Aggregates related data across tables: 2 or more
+ 2. Default: CROSS JOIN - i.e. 'select * from messages, messagescategories;'
+  Note: CROSS JOIN produces: 'N * M' rows of data
+
+Tasks:
+ 1. Populate the 'messagescategories' dependency (lookup) table
+  a. 'INSERT INTO messagescategories VALUES (1,'VSFTPD'),(2, 'SSHD'),(3, 'XINETD'); '
+
+ 2. Standard JOIN using 'WHERE' Clause:
+  a. 'SELECT * from messages AS m, messagescategories AS mc WHERE m.id = mc.id;' - INNER JOIN using 'WHERE' Clause
+  b. Create JOIN with a third table
+   b1. 'create table messagesalerts (id int NOT NULL, alert text NOT NULL);'
+   b2. 'INSERT INTO messagesalerts VALUES (1, 'DEBUG'), (2, 'INFORMATIONAL'), (3, 'WARNING');'
+   b3. 'SELECT * from messages AS m, messagescategories AS mc, messagesalerts AS ma WHERE m.id = mc.id AND m.id = ma.id;'
+   b4. 'SELECT m.id, date, category, alert from messages AS m, messagescategories AS mc, messagesalerts AS ma WHERE m.id = mc.id AND m.id = ma.id;' - Returns one (id) column in result set
+
+  3. INNER JOINs
+   a. 'select * FROM messages AS m INNER JOIN messagescategories ON m.id = messagescategories.id;' - Functionally equivalent to JOIN with 'WHERE' Clause
+   b. 'select * FROM messages AS m INNER JOIN messagescategories USING (id);' - Same as above but suppresses duplicate (id) column
+   c. 'select m.id, m.date, category FROM messages AS m INNER JOIN messagescategories USING (id);'
+
+  4. LEFT JOINs
+   Features: Matches (id) from left table and includes only (id) from right table that match
+   a. 'select * from messages as m LEFT JOIN messagescategories on m.id = messagescategories.id;'
+   b. 'select * from messages as m LEFT JOIN messagescategories USING (id);' - Same as above but suppresses duplicate (id) column
+   c. 'select m.id,m.date,messagescategories.category from messages as m LEFT JOIN messagescategories USING (id);' - Same as above but suppresses duplicate (id) column
+
+  5. RIGHT JOINs
+   Features: Matches (id) from right table and includes ONLY (id) from left table that match
+   a. 'select * from messages as m RIGHT JOIN messagescategories on m.id = messagescategories.id;'
+   b. 'select * from messages as m RIGHT JOIN messagescategories USING (id);'
+   c. Insert a new category into table: 'messagescategories'
+    c1. 'INSERT INTO messagescategories VALUES (101, 'UNKNOWN'); '
+
+Note: Foreign Key Constraint prohibits the creation of values in: 'messagescategories' that DO NOT exist in table: 'messages'
+   d. 'select m.id,m.date,messagescategories.category from messages as m RIGHT JOIN messagescategories USING (id);'  - Same as above but suppresses duplicate (id) column
+
+   e. 'select m.id,m.date,messagescategories.category from messages as m INNER JOIN messagescategories USING (id) ORDER BY category;'  - Same as above but suppresses duplicate (id) column and orders by 'category' ASC
+
+###VIEWS###
+Features:
+ 1. Presents consolidated query-driven interfaces to data
+ 2. They may be based on 1 or more tables
+ 3. Not a real objects; rather, query is executed upon invocation
+ 4. Supports temporary VIEWS - lasts for session duration
+ 5. Column names are auto-derived from the query
+
+Tasks:
+ 1. Define VIEW based on INNER JOIN of: 'messages' & 'messagescategories'
+  a. 'CREATE VIEW messagesandcategories AS SELECT * FROM messages INNER JOIN messagescategories USING (id); ' - creates permanent view of inner-joined tables
+  b. 'SELECT * FROM messagesandcategories;' - executes the VIEW
+ 2. Insert Records to both: 'messages' & 'messagescategories' & re-query VIEW
+  a. 'INSERT INTO messagescategories VALUES(4, 'KERNEL'); '
+
+ 3. Use Aliases
+  a. 'SELECT id AS i, date AS d, category AS c FROM messagesandcategories ORDER BY id;'
+ 4. Update VIEW
+  a. 'CREATE OR REPLACE VIEW messagesandcategories AS SELECT id AS i, date AS d, category AS c FROM messages INNER JOIN messagescategories USING (id);' - Creates or Updates VIEW
+  b. 'CREATE OR REPLACE VIEW messagesandcategories (i,d,c)AS SELECT id, date, category FROM messages INNER JOIN messagescategories USING (id); '
+
+  5. Create TEMP VIEW
+   a. 'CREATE TEMP view messagesandalerts (i,d,a) AS SELECT id,date,alert FROM messages INNER JOIN messagesalerts USING(id);'
+Note: TEMP VIEWs are not assigned to the default: 'public' schema
+Note: TEMP VIEWs are NOT available to other sessions
+
+  6. Create TEMP VIEW based on a single table
+   a. 'CREATE TEMP view messagesdates AS SELECT date FROM messages; '
+
+
+
+###Aggregates###
+Features:
+ 1. Compute single results (scalars) from multiple inputs (rows)
+ 2. Values are computed after 'WHERE' has selected rows to analyze
+  a. Consequently, aggregates may not be used within: 'WHERE" clause
+  b. However, aggregates CAN be used with: 'HAVING' clause
+ 3. 'HAVING' is calculated post-aggregate computation(s)
+
+Examples:
+ 1. 'SELECT count(*) FROM messages;' - counts rows
+  a. 'SELECT count(date) FROM messages;' - counts rows as well
+ 2. 'SELECT sum(id) FROM messages;' - Adds values from each row
+ 3. 'SELECT avg(id) FROM messages;' - Averages values across ALL rows
+ 4. 'SELECT min(id) FROM messages;' - Finds min value across ALL rows
+ 5. 'SELECT max(id) FROM messages;' - Finds max value across ALL rows
+Note: 'min' and 'max' work with both numeric and date types
+ 6. 'SELECT min(id), max(id), avg(id), count(id) FROM messages;' - queries multiple aggregates simultaneously
+
+Examples with WHERE, GROUP BY & HAVING
+ 7. 'SELECT date, min(id) FROM messages GROUP BY date;' - groups 'min(id)' by 'date'
+Note: When referencing non-aggregated and aggregated columns in the same query, use the 'GROUP BY' clause to sort aggregated data by non-aggregated data
+
+ 8. 'SELECT date, min(id) FROM messages WHERE id < 51 GROUP BY date;' - restricts aggregate 'min(id)' to rows containing (id) < 51
+ 9. 'SELECT date, min(id) FROM messages WHERE id < 51 GROUP BY date HAVING min(id) < 30;' - Post-aggregate, restricts returned results to (id) < 30
+
+10. 'SELECT date, min(id), max(id) FROM messages WHERE id < 51 AND id > 40 GROUP BY date;' - Extract between 40>(id)<51
+
+Boolean Aggregates:
+ 1. 'ALTER TABLE messages ADD enabled boolean NOT NULL DEFAULT false;' - extends table to include a boolean column: 'enabled'
+ 2. 'SELECT bool_and(enabled) FROM messages;' - returns TRUE if ALL are true
+ 3. 'SELECT bool_or(enabled) FROM messages;' - returns TRUE if 1 or more are true
+
+String Aggregates:
+ 1. 'ALTER TABLE messages ADD message text NOT NULL DEFAULT 'syslog message';'
+ 2. 'SELECT string_agg(message, ' ') FROM messages;' - concatenates string(text) values with single-space delimiter
+
+###UPDATE###
+Features:
+ 1. Updates table(s) based on criteri(on|a)
+ 2. Requires: name of table, column(s) to update, criteri(on|a) (WHERE) clause
+ 3. Updates table and sub-tables unless: 'ONLY' keyword is used
+ 4. Output indicates number of records updated
+ 5. WILL UPDATE ALL RECORDS if missing CRITERI(on|a)
+
+Examples:
+ 1. 'UPDATE messages SET enabled='t' WHERE id = 100;' - updates 1 record to true
+ 2. 'UPDATE messages SET enabled='t' WHERE enabled = 'f'; updates many records to false
+ 3. 'UPDATE messages SET enabled='f' WHERE id >= 50;' - updates record with (id) >= 50 to false
+ 4. 'UPDATE messages SET enabled='1' WHERE id >=50;' - updates records with (id) >= 50 to true
+ 5. 'UPDATE messages SET enabled=0, message = 'new message' WHERE id = 100;' - updates multiple columns WHERE id = 100;
+ 6. 'UPDATE messages SET enabled = DEFAULT;' - resets column 'enabled' to default value for ALL rows
+ 7. 'select * from messages where message <> 'syslog message';' - checks for rows where column 'message' IS NOT 'syslog message'
+ 8. 'UPDATE messages SET message = DEFAULT WHERE id = 100;'
+ 9. 'UPDATE messages SET message = DEFAULT RETURNING * WHERE id = 100;' - returns ALL columns
+Note: 'RETURNING' - is PostgreSQL-specific
+Note: It is equivalent to running a post-UPDATE SELECT query
+
+10. 'UPDATE messages SET id = id+1 WHERE id = 102;' - increments (id) by 1
+11. 'UPDATE messages SET id = id+1 WHERE id = 100 RETURNING *;' - ERROR because of duplicate
+12. 'UPDATE messages SET id = id+1 WHERE id = 101 RETURNING *;' - ERROR because of foreign key constraint
+
+13. 'UPDATE messages set date = 'now' RETURNING *;'
+
+###DELETE###
+Features:
+ 1. Removes entire records based on criteri(a|on)
+ 2. Does NOT remove individual column(s)
+ 3. Requires: name of table, and preferably criteri(a|on) (WHERE) clause
+ 4. Deletes recursively: Use 'ONLY' to avoid deleting child tables
+ 5. Returns number of (count) records deleted
+
+Examples:
+ 1. 'DELETE FROM messages WHERE id = 103;' - removes a single record IF EXISTS
+ 2. 'DELETE FROM messages WHERE date = '2010-10-18' AND enabled = 'f' AND id >= 50;' - removes records with (id) >=50
+Note: Fails because of foreign key constraint
+ 3. 'DELETE FROM messages WHERE date = '2010-10-18' AND enabled = 'f' AND id >= 50 AND id < 101;' - removes records with (id) >=50
+  a. 'SELECT count(*), min(id), max(id) FROM messages;'
+ 4. 'DELETE FROM messages WHERE id >= 40 AND id <= 50 RETURNING *;'
+
+ 5. 'DELETE FROM messages WHERE enabled = '1' RETURNING *;' - Boolean criterion
+Note: Foreign Key constraint prohibits the entire transaction
+ 6. 'DELETE FROM messages WHERE enabled = '1' AND id >= 30 AND id !=101 RETURNING *;'
+ 7. 'DELETE FROM MESSAGES;' - deletes ALL rows and rows of sub-tables recursively
+  a. 'DROP CONSTRAINT IF EXISTS messagescategories_id_fkey;' - remove constraint from dependent table
+
+ 8. Reconstitute 'messages' table to include auto-generating 'SERIAL' type on (id) column and re-populate with data
+  a. 'ALTER TABLE messages drop id CASCADE;' - drops column with CASCADE
+  b. 'ALTER TABLE messages add id serial;' - creates auto-sequence generator
+  c. 'for i in `seq 10000`; do echo `date +%F`; done > messages.date.10k' - generate 10k records
+  d. 'COPY messages (date) FROM '$PATH_TO/messages.date.10k';
+  e. 'SELECT COUNT(*) FROM messages;'
+
+
+
+###INDICES###
+Features:
+ 1. Speed data retrieval & writes (INSERT, UPDATE, DELETE)
+ 2. Indexes reference data locations, explicitly, for indexed columns, consequent reducing data retrieval time
+ 3. Without indices, SQL performs sequential table scans in search of data
+ 4. Create on columns that are frequently queried and/or JOINed
+ 5. Caveat: During creation, ONLY reads are permitted to table being indexed
+ 6. Max of 32 columns per index - multicolumn
+ 7. PostgreSQL auto-maintains indices
+
+Tasks:
+ 1. 'EXPLAIN select * from messages;' - explains (does not execute) plan to execute query
+ 2. 'EXPLAIN select * from messages where id = 4000;'
+ 3. Drop & Recreate messages table
+  a. 'DROP TABLE messages;'
+  b. 'CREATE TABLE messages (date date, id SERIAL);'
+  c. 'ALTER TABLE messages ADD primary key (id);' - generate btree index on: (id)
+
+ 4. Create an index on a column
+  a. 'ALTER TABLE messages ADD messageid type numeric NOT NULL;'
+  b. 'CREATE INDEX messages_id ON messages(messageid);'
+  c. 'explain ANALYZE select messageid, date from messages where messageid = 5990;' - 'ANALYZE' causes query to execute, suppressing the output, returning useful statistics
+
+  5. Enumerate Indices' info
+   a. '\di[S+]' - enumerates ALL indices within public schema
+  6. Drop Index
+   a. 'DROP INDEX messages_id;'
+
+###Built-In Functions###
+Features:
+ 1. Manipulate data in a variety of ways
+
+Tasks:
+ 1. Cover Math Functions
+  a. 'select abs(-5);'
+  b. 'select sqrt(25); || select sqrt(id) FROM messages'
+  c. 'select cbrt(125);'
+  d. 'select ceil(95.4);' - returns next highest integer
+  e. 'select floor(95.4);' - returns next lowest integer
+  f. 'select div(25,5);' - performs division - returns least integer
+  g. 'select log(1000);'
+  h. 'select power(4,3);' - raises 4 to the 3rd power
+  i. 'select random();' - returns random value between 0 and 1 - 10^-15
+  j. 'select round(35.4);' - rounds down or up
+  k. 'select trunc(95.456, 1);' - useful for normalizing floating point
+  l. 'select cos(0);' - returns 1 - other trig functions are available
+
+ 2. Cover Useful String Functions
+  a. 'select bit_length('test bunny');' - 80-bits
+  b. 'select bit_length(message) FROM messages;' - 112-bits
+  c. 'select char_length('test bunny');' - 10 chars
+  d. 'select char_length(message), message FROM messages;' - 14 chars
+  e. 'select lower('Test Bunny');' - normalizes output to be lower case
+  f. 'select lower(message) FROM messages;' - normalizes output to be lower case from column
+  g. 'select upper(message) FROM messages;' - normalizes output to be upper case from column
+  h. 'select message, initcap(message) FROM messages;' - Applies CAPS to first letter of each word
+  i. 'select overlay('test' placing 'xx' from 2);' - string replacement
+  j. 'select message, overlay(message placing '   ' from 1) FROM messages;' - applies to query
+  k. 'select trim(both ' ' from ' LinuxCBT ');' - trims leading & trailing, not between
+  l. 'select substring('syslog' from 4);'
+  m. 'select message, substring(message from 4) FROM messages;' - applies to table
+  n. 'select split_part('syslog message', ' ', 2);' - returns 2nd string using space delimiter
+  o. 'select initcap(split_part(message, ' ', 2)) FROM messages LIMIT 10;' - nested functions
+
+
+
+###Model: /var/log/messages###
+Features:
+ 1. Challenge of replicating a flat-file structure
+
+Tasks:
+ 1. Examine and model: /var/log/messages
+  a. Need: 'mId, mCatID, mTime (timestamp) transformation needed, mHost, mFacility, mMessage'
+ 2. Generate 'CREATE' statement
+  a. 'CREATE TABLE messages (mid BIGSERIAL PRIMARY KEY, mcatid smallint NOT NULL DEFAULT 1, mtime timestamp NOT NULL DEFAULT now(), mhost text NOT NULL DEFAULT 'Unknown Host', mfacility text NULL DEFAULT NULL, mmessage text NOT NULL DEFAULT 'NO MESSAGE' ); '
+ 3. Test 'INSERT' statement for sample record
+  a. 'INSERT INTO messages (mtime, mhost, mfacility, mmessage) VALUES ('Oct 17 07:53:42 2010', 'linuxcbtbuild1', 'kernel:', '[861929.262518] device eth0 left promiscuous mode)'); '
+
+ 4. Write Perl script to parse: /var/log/messages and transform data to suite PostgreSQL
+  a. Also include logic to extract: ':' from the end of the facility name. i.e. 'kernel:' should become: 'kernel'
+
+ 5. Create new log file for Bulk Import
+  a. './parselogs.pl /var/log/messages > messages.log.new'
+
+ 6. Bulk-load messages into: PostgreSQL
+  a. 'COPY messages (mtime,mhost,mfacility,mmessage) FROM '/home/linuxcbt/LinuxCBT_feat._PostgreSQL_Edition/messages.log.new' DELIMITER ';'; ' - Bulk-imports contents of new syslog file
+
+ 7. Create category for joins
+  a. 'INSERT INTO messagescategories VALUES('1', 'NOTICE'); '
+
+Note: Sometimes you may need to select a different delimiter when parsing
+
+ 8. Perform join with 'messagescategories'
+  a. 'SELECT mtime,mhost,mfacility,messagescategories.name, mmessage FROM messages as m INNER JOIN messagescategories ON messagescategories.cid = m.mcatid;'
+  b. 'SELECT mtime,mhost,mfacility,messagescategories.name, mmessage FROM messages as m INNER JOIN messagescategories ON messagescategories.cid = m.mcatid WHERE mfacility <> 'kernel';'
+
+Note: To post-process the log files, consider using: CRON
+
+
+###Integration of Perl with PostgreSQL###
+Requires:
+ 1. 'libpg-perl' - PostgreSQL module for Perl
+Features:
+ 1. DBMS connectivity to Perl applications/scripts
+
+Tasks:
+ 1. Install 'libpg-perl'
+  a. 'aptitude install libpg-perl'
+ 2. Create sample script to connect to DB and query table
+
+ 3. Integrate INSERTs into Perl Script
+Note: Caveat: Bulk Copies are faster than INSERTs
+  a. ' $conn->exec("INSERT INTO messages (mtime,mhost,mfacility,mmessage) VALUES (\'$date2\',\'$host\',\'$facility\',\'$message\');" ); '
+
+ 4. Perform Bulk Copy via script after transformations
+Note: Move this section outside of loops
+  a. ' $conn->exec("COPY messages (mtime,mhost,mfacility,mmessage) FROM '/home/linuxcbt/LinuxCBT_feat._PostgreSQL_Edition/messages.18.log.new' DELIMITER ';';" ); '
+
+###GRANT###
+Features:
+ 1. Assigns Priviliges:
+  a. SELECT - columns or tables
+  b. INSERT - columns or tables
+  c. UPDATE 
+  d. DELETE - row-based
+  e. CREATE
+  f. CONNECT
+  g. EXECUTE
+  h. TRIGGER
+  i. USAGE
+  j. TEMPORARY
+  k. TRUNCATE
+  l. REFERENCES
+ 2. Objects are owned by creators: owners/super-users
+  a. non-super users have NO access to them
+ 3. Use: '\dp' - to reveal GRANTs on objects
+
+Tasks:
+ 1. Create new user 'linuxcbt3' and try to SELECT data from existing tables
+  'CREATE ROLE linuxcbt3 LOGIN password 'abc123'; '
+Note: UPDATE & DELETE privileges require SELECT for criteri[a|on] application
+
+ 2. Attempt to query tables owned by other users
+  a. 'SELECT * FROM messages LIMIT 10;' - Fails
+
+ 3. Remedy scenario to allow user: 'linuxcbt3' to SELECT data from 'messages' table
+  a. 'GRANT SELECT (mid,mcatid,mtime) ON messages TO linuxcbt3;' - Column-level privileges
+  b. 'GRANT SELECT ON messages TO linuxcbt3; ' - Table-level privileges - supercedes column restrictions
+
+ 4. Attempt to INSERT new record into: 'messages' table
+  a. 'INSERT INTO messages (mtime,mhost,mfacility,mmessage) VALUES ('Oct 21 10:48:46 2010','linuxcbtbuild1','test','TESTING INSERT PRIVILEGE'); '
+  b. 'GRANT INSERT ON messages TO linuxcbt3;' - grants INSERT on ALL columns
+  c. 'GRANT USAGE ON messages_mid_seq TO linuxcbt3;' - grants USAGE on sequence
+Note: If using sequences, grant USAGE on sequence to user
+
+ 5. Attempt to UPDATE current records in: 'messages' table 
+  a. 'UPDATE messages SET mfacility = 'test2' WHERE mid = '204366'; '
+  b. 'GRANT UPDATE on messages TO linuxcbt3;' 
+Note: UPDATE privilege allows user to update ANY record in the table
+
+ 6. Attempt to DELETE current records from: 'messages' table
+  a. 'DELETE FROM messages WHERE mid = '204366'; '
+  b. 'GRANT DELETE on messages TO linuxcbt3;'
+
+ 8. Grant ALL privileges on : 'messages' table
+  a. 'GRANT ALL on messages TO linuxcbt3;'
+
+###REVOKE###
+Features:
+ 1. Converse of GRANT
+ 2. Unassigns privileges
+ 3. Sample permission set:
+ linuxcbt2=arwdDxt/linuxcbt2
+a = INSERT/Append
+r = Read/SELECT
+w = Write/UPDATE
+d = DELETE
+D = Truncate
+x = References
+t = Triggers
+/linuxcbt2 = permissions delegator/issuer
+
+
+Tasks:
+ 1. 'REVOKE ALL on messages FROM linuxcbt3;' - removes ALL privileges from the user
+ 2. 'GRANT ALL ON messages TO linuxcbt3;' - reinstate privileges
+ 3. 'REVOKE ALL on messages,messages_mid_seq FROM linuxcbt3;' - removes ALL privileges from the user for both objects
+ 4. Grant & Revoke: INSERT | UPDATE | DELETE
+  a. 'GRANT INSERT ON messages TO linuxcbt3;'
+  b. 'GRANT USAGE ON messages_mid_seq TO linuxcbt3;' - sequence generator access
+Note: INSERT may be granted independently of SELECT, unlike: UPDATE & DELETE
+  c. 'REVOKE INSERT ON messages FROM linuxcbt3; REVOKE USAGE ON messages_mid_seq FROM linuxcbt3;' - Two revocations: INSERT & USAGE
+  d. 'GRANT UPDATE ON messages TO linuxcbt3;'
+  e. 'UPDATE messages SET mfacility='TEST2' WHERE mid = '204371'; ' - Fails because the user has NO SELECT privilege to execute the criteria in the UPDATE query
+  f. 'GRANT SELECT ON messages TO linuxcbt3;'
+  g. 'REVOKE ALL ON messages,messages_mid_seq FROM linuxcbt3;'
+  h. 'GRANT DELETE ON messages TO linuxcbt3;'
+  i. 'DELETE FROM messages WHERE mid = 204371; '
+  j. 'GRANT SELECT ON messages TO linuxcbt3;'
+
+Test WITH GRANT OPTION
+ a. 'GRANT ALL on messages TO linuxcbt3 WITH GRANT OPTION;' - allows user: 'linuxcbt3' to GRANT ALL privileges on the object: 'messages' to other users
+ b. 'CREATE ROLE linuxcbt4 LOGIN PASSWORD 'abc123'; '
+ c. 'GRANT SELECT ON messages TO linuxcbt4;' - run as: 'linuxcbt3'
+ d. 'GRANT INSERT ON messages TO linuxcbt4;' - run as: 'linuxcbt3'
+ e. 'GRANT UPDATE ON messages TO linuxcbt4;' - run as: 'linuxcbt3'
+ f. 'GRANT DELETE ON messages TO linuxcbt4;' - run as: 'linuxcbt3'
+
+Attempt to REVOKE PRIVILEGES FROM 'linuxcbt3' as user: 'linuxcbt2' OR super user
+ a. 'REVOKE ALL ON messages FROM linuxcbt3;' - Fails due to privileges depency
+ b. 'REVOKE ALL ON messages FROM linuxcbt3 CASCADE;' - Recursive
+
+Note: If a permissions/privileges depency exists, use: 'CASCADE' option with 'REVOKE' command to descend the permissions/privileges hierarchy
+
+Test direct removal of privileges from top-level to bottom
+ a. 'GRANT ALL on messages TO linuxcbt3 WITH GRANT OPTION;' - run as: 'linuxcbt2' or super user
+ b. 'GRANT SELECT,DELETE on messages TO linuxcbt4; ' - run as: 'linuxcbt3'
+ c. 'REVOKE ALL on messages FROM linuxcbt4; ' - run as: 'linuxcbt2' OR super user - FAILS
+Note: Fails due to GRANT hierarchy
+ d. 'REVOKE ALL ON messages FROM linuxcbt3 CASCADE;' - Recursive
+
+###DB Backup###
+Features:
+ 1. Individual table, DB, or full DBMS backup
+ 2. 'pg_dump' & 'pg_dumpall'
+ 3. Operate on running DB
+ 4. Export SQL script or Archive (pg_dump) (used with pg_restore) formats
+ 5. SQL Script: Designed for full replay with: 'psql' utility
+ 6. Archive File: Designed to allow selective and/or reordered restores:
+  a. '-Fp) - Default - Plain SQL script output - uncompressed
+  b. '-Fc) - Custom, auto-compressed form - 'pg_restore'
+  c. '-Ft) - Tar form - not compressed - restrictions on reordering - works with: 'tar' & 'pg_restore'
+
+Tasks:
+ 1. Backup 'postgres' DB - Plain (-Fp) Format
+  a. 'pg_dump postgres' - dumps to STDOUT
+  b. 'pg_dump -v -f DB_Backup_postgres postgres ' - generates plain text SQL script file containing data
+Note: Uses 'COPY' to reconstruct data as opposed to: 'INSERT'
+  c. 'pg_dump -v postgres > DB_BACKUP_postgres2' - performs as above
+  d. 'pg_dump -v -s -f DB_Backup.schema postgres' - dumps SCHEMA ONLY
+  e. 'pg_dump -v -t messages -t messagescategories -f DB_Backup.messages.cats.tables.only'
+  f. 'pg_dump -v -t 'messages*' -f DB_Backup_ALL_messages_tables.only' - Archives ALL items in 'postgres' DB beginning with: 'messages'
+
+ 2. Backup 'postgres' DB - Compressed (-Fc) Format
+  a. 'pg_dump -v -Fc -f DB_Backup.postgres.compressed postgres' - creates custom, compressed file to be used with: 'pg_restore'
+
+ 3. Backup 'postgres' DB - Tar (-Ft) Format
+  a. 'pg_dump -v -Ft -f DB_Backup.postgres.tar postgres' - creates a tarball of DB
+
+ 4. Use 'pg_dumpall' to archive the entire DBMS
+  a. 'pg_dumpall -v -f DB_Backup.ALL'
+  b. Create auth file in: $HOME to obviate the need to authenticate to each DB
+  c. 'echo 'localhost:*:*:linuxcbt2:abc123' > ~/.pgpass && chmod 600 ~/.pgpass'
+  d. Re-run 'pg_dumpall' as user: 'linuxcbt2' - defined in: $HOME/.pgpass
+  e. 'pg_dumpall -v -U linuxcbt2 -f DB_Backup.ALL'
+
+
+###DB Restore###
+Features:
+ 1. Two tools: 'psql' && 'pg_restore'
+
+Tasks:
+ 1. Use 'pg_restore' to restore tables, DBs, etc.
+  a. 'DROP table messages2, messagescategories;'
+  b. 'pg_restore -v -d postgres DB_Backup.postgres.compressed' - full restoration using 'compressed' file
+  c. 'pg_restore -v -d postgres DB_Backup.postgres.tar' - full restoration using 'tar' file
+
+Note: Use: 'pg_restore -l backup_file' to enumerate items for selective/reordered restoration
+
+
+ 2. Backup 'linuxcbt2' DB and restore
+  a. 'pg_dump -v -C -Fc -f DB_Backup.linuxcbt2.DB linuxcbt2'
+  b. 'DROP DATABASE linuxcbt2;'
+  c. 'pg_restore -v -C -d postgres DB_Backup.linuxcbt2.DB' - restores DB 'linuxcbt2'
+  d. 'pg_dump -v -C -f DB_Backup.linuxcbt2.DB.sql linuxcbt2'
+  d. 'DROP DATABASE linuxcbt2;'
+  e. 'psql -f DB_Backup.linuxcbt2.DB' - Fails because source file is not SQL text
+
+ 3. Restore specific tables using: 'pg_restore'
+  a. 'DROP table messages2, messagescategories;'
+  b. 'pg_restore -v -d postgres -t messages2 DB_Backup.postgres.compressed' - restores 1 table
+  c. 'pg_restore -v -d postgres -t messagescategories DB_Backup.postgres.tar' - restores 1 table
+
+ 4. Use 'psql' to restore selected backup items (tables, sequences, etc.)
+  a. 'DROP table messages, messagescategories;'
+  b. 'psql -f DB_Backup.messages.cats.tables.only'
+  c. 'DROP table  messages, messagescategories, messages2, messagesalerts;'
+  d. 'psql -f DB_Backup_ALL_messages_tables.only;'
+
+###Windows DB Restoration###
+
+Tasks:
+ 1. Explore Windows PostgreSQL environment
+  a. 'psql -h 192.168.75.105'
+ 2. Restore data to Windows instance
+  a. 'psql -h 192.168.75.105 -f DB_Backup.ALL' - restores FULL DB to remote host
+ 3. Wreak Havoc on remote DB and Restore
+  a. 'DROP TABLE messages, messages2, messagescategories;'
+  b. 'pg_restore -v -h 192.168.75.105 -d postgres -t messages2 DB_Backup.postgres.compressed' - restores 1 table
+  c. 'pg_restore -v -h 192.168.75.105 -d postgres -t messages DB_Backup.postgres.compressed' - restores 1 table
+  d. 'pg_restore -v -h 192.168.75.105 -d postgres -t messagescategories DB_Backup.postgres.tar' - restores 1 table
+  e. 'DROP TABLE messages, messagescategories, messages2, messagesalerts;'  
+  f. 'psql -h 192.168.75.105 -f DB_Backup_ALL_messages_tables.only;'
+ Note: Ensure that remote system's HBA conf file accepts remote connections
+
+###Installation on RedHat Enterprise Linux###
+Features:
+ 1. PostgreSQL support
+ 2. Ability to use the same binary used on the other distributions
+
+
+Tasks:
+ 1. Copied binary from remote system to local RedHat system
+ 2. Executed it
+ 3. Confirm availability: 'ps -ef | grep -i postgres'
+ 4. Connect and confirm default environment
+ 5. Update ~linuxcbt $PATH & $PGUSER vars
+ 6. Source if necessary for active TTY
+  a. '. ~/.bash_profile'
+
+ 7. Mirror contents of remote server
+  a. Get 'DB_Backup.ALL' - use 'sftp'
+  b. Populate RedHat instance of PostgreSQL with data from Debian box
+   b1. 'psql -f DB_Backup.ALL'
+
+ 8. Remove tables and restore across the wire using: 'psql'
+  a. Update HBA conf to allow network connectivity
+  b. Restart 'postgres' to effect 'pg_hba.conf' change
+  c. Restore items using: 'psql' from remote host
+   c1. 'psql -U postgres -f DB_Backup.ALL postgres -h 192.168.75.20' - replays script on 
+remote, RedHat Enterprise box
+
+###SSH Tunnels###
+Features:
+ 1. Secure communications from point-to-point
+ 2. Encryption services
+ 3. Wrapper of communications
+ 4. Traffic is protected in transit, NOT at the endpoints
+ 5. Defaults to protecting loopback adapter address(es)
+
+Tasks:
+ 1. Sniff PostgreSQL communications using: 'tcpdump'
+  a. 'tcpdump -w postgres.dump.1 -v -i lo tcp port 5432'
+  b. 'psql -h localhost'
+  c. 'wireshark postgres.dump.1' - reveals sensitive data
+
+ 2. Apply SSH tunnels from Linux
+  a. 'ssh -L 5433:192.168.75.20:5432 192.168.75.20' - creates a tunnel between:
+linuxcbtbuild1 (.101) -> linuxcbtserv1 (.20)
+  b. 'netstat -ntl | grep 5433' - confirms existence of tunnel
+  c. 'psql -h localhost -p 5433' - initiate connection
+
+  d. 'ssh -L 5433:192.168.75.101:5432 192.168.75.101' - creates a tunnel between:
+linuxcbtbuild1 (.101) -> linuxcbtserv1 (.20)
+  e. 'psql -h 127.0.0.1 -p 5433' - initiate connection
+
+ 3. Apply SSH tunnel from Windows
+  a. Ensure that PuTTY or equivalent SSH client is installed
+  b. Setup session to forward TCP:5433 & TCP:5434 to TCP:5432 on Debian and RedHat boxes
+  c. Test 'psql' client access across the tunnel from Windows
+Note: This will not work with Windows as the target SSH server sans Cygwin or compatible SSH service
+
+
+###SSL Connections###
+Features:
+ 1. True end-to-end encryption protection - 100% 
+ 2. Listens to same, clear-text port: TCP:5432
+ 3. Auto-negotiates with client connection type unless server config (pg_hba.conf) enforce
+Oct 18 12:10:15 2010#linuxcbtbuild1#kernel#[963722.044003] arpalert[4845]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:15 2010#linuxcbtbuild1#kernel#[963722.044003] arpalert[4845]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:15 2010#linuxcbtbuild1#kernel#[963722.044003] arpalert[4845]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:15 2010#linuxcbtbuild1#kernel#[963722.044003] arpalert[4845]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:15 2010#linuxcbtbuild1#kernel#[963722.044003] arpalert[4845]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:15 2010#linuxcbtbuild1#kernel#[963722.044003] arpalert[4845]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:15 2010#linuxcbtbuild1#kernel#[963722.044003] arpalert[4845]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:15 2010#linuxcbtbuild1#kernel#[963722.044003] arpalert[4845]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:15 2010#linuxcbtbuild1#kernel#[963722.044003] arpalert[4845]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:15 2010#linuxcbtbuild1#kernel#[963722.044003] arpalert[4845]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:15 2010#linuxcbtbuild1#kernel#[963722.044003] arpalert[4845]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:15 2010#linuxcbtbuild1#kernel#[963722.044003] arpalert[4845]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:15 2010#linuxcbtbuild1#kernel#[963722.044003] arpalert[4845]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:15 2010#linuxcbtbuild1#kernel#[963722.044003] arpalert[4845]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:15 2010#linuxcbtbuild1#kernel#[963722.044003] arpalert[4845]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:15 2010#linuxcbtbuild1#kernel#[963722.044003] arpalert[4845]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:20 2010#linuxcbtbuild1#kernel#[963727.050042] arpalert[4847]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:20 2010#linuxcbtbuild1#kernel#[963727.050042] arpalert[4847]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:20 2010#linuxcbtbuild1#kernel#[963727.050042] arpalert[4847]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:20 2010#linuxcbtbuild1#kernel#[963727.050042] arpalert[4847]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:20 2010#linuxcbtbuild1#kernel#[963727.050042] arpalert[4847]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:20 2010#linuxcbtbuild1#kernel#[963727.050042] arpalert[4847]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:20 2010#linuxcbtbuild1#kernel#[963727.050042] arpalert[4847]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:20 2010#linuxcbtbuild1#kernel#[963727.050042] arpalert[4847]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:20 2010#linuxcbtbuild1#kernel#[963727.050042] arpalert[4847]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:20 2010#linuxcbtbuild1#kernel#[963727.050042] arpalert[4847]: segfault at 126 ip b76b04cb sp bfd23c44 error 4 in libc-2.7.so[b763a000+155000]
+Oct 18 12:10:20 2010#linuxcbtbuild1#kernel#[963727.050042] arpales type
+ 4. Supports server (default) & client certificates
+ 5. 'openssl version -d' - reveals config directory for OpenSSL
+
+Requires:
+ 1. Server keypair: 'server.crt' (public) & 'server.key" (private) in: DATA directory
+ 2. 'server.key' - MUST be flagged 600
+ 3. Optionally, 'root.crt' & 'root.crl' 
+ 4. 'ssl=on' - enabled via: 'postgresql.conf'
+
+
+Tasks:
+ 1. Generate Server Keypair
+  a. 'openssl req -new -text -out server.req' - Generates a request
+  b. 'openssl rsa -in privkey.pem -out server.key' - removes passphrase
+  c. 'rm privkey.pem' - because we now have an RSA version in: 'server.key'
+  d. 'openssl req -x509 -in server.req -text -key server.key -out server.crt' - generates self-signed certificate (.crt) file
+  e. 'chown postgres server.key && chmod 600 server.key'
+
+ 2. Configure PostgreSQL
+  a. 'ssl=on' - postgresql.conf
+  b. Restart postgresql
+
+Note: Test inability to restart postgres when 'server.key' is not readable
+
+ 3. Test connectivity
+  a. 'psql -U postgres -h localhost' - SSL was used because TCP/IP was used
+Note: SSL is not enabled when using Unix Domain Sockets
+  b. 'psql -h 192.168.75.101' - SSL was used...
+  c. 'psql ' - SSL was NOT used due to Unix Domain Sockets usage
+  d. Connect to RedHat host and test connectivity
+  
+ 4. Sniff SSL session with TCPDump
+
+ 5. Test from Windows
+  a. 'psql -h 192.168.75.101' - It works with SSL...
+
+###################################################### Raid ######################
+
+mdadm --create /dev/md0 --level=0 --raid-devices=2 /dev/sda6 /dev/sda7
+
+mdadm --detail /dev/md0
+
+mkfs.ext4 /dev/md0
+
+incase of issue mdo will be booted like md127
+
+mdadm --stop /dev/md127
+
+mdadm --assemble --scan
+
+#####
+mdadm /dev/md0 --fail /dev/sdb1 #Marks /dev/sdb1 as faulty
+ mdadm --remove /dev/md0 /dev/sdb1 #Removes /dev/sdb1 from the array 
+
+Afterwards, when you have a new drive for replacement, re-add the drive again:
+mdadm /dev/md0 --add /dev/sdb1 
+
+Note that the steps detailed above apply for systems with hot-swappable disks. If you do not have such technology, you will also have to stop a current array, and shutdown your system first in order to replace the part:
+
+ mdadm --stop /dev/md0
+# shutdown -h now
+
+Then add the new drive and re-assemble the array:
+# mdadm /dev/md0 --add /dev/sdb1
+mdadm --grow --raid-devices=4 /dev/md1
+
+# mdadm --assemble /dev/md0 /dev/sdb1 /dev/sdc1 
+
+
+################
+autobiographies
+
+There are great biographies of Benjamin Franklin, James Madison, Albert Einstein, Thomas Jefferson, Napoleon Bonaparte, Mahatma Gandhi, Charles Darwin, Jack Welsh, Alexander Hamilton, Warren Buffet and many other illustrious personalities.
+
+
+################  Learning puppet	1/11/2015
+
+
+################
+Puppet installation
+
+
+On Puppet Master Server:---
+1)Install vim git ntp
+	sudo yum -y install git vim ntp
+	sudo service ntpd start and configure it to start at boot time.
+
+2)Installing the puppet master 
+	adding the puppet repository
+	sudo yum -y install http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
+	
+	adding the puppet server
+	sudo yum -y install puppet-server
+
+	verify the installation
+	puppet master --version
+
+3)Setting up directory environment
+
+** puppet programs are stored in files called puppet manifest, puppet manifests consist of node and resource declaration which tells puppet which config to apply to which node, (but how does puppet master know which manifest to use and where to find them). By default puppet loads site manifest which is located in /etc/puppet/manifest/site.pp. Problem with this is it limits you to single manifest per puppet master. DIRECTORY ENVIRONMENTS are alternative to use the default site manifest they allow youto maintain diff env on single puppet master eg env for testing,production,development these environment are seprated by directories hence the term "directory environment"
+
+	Tasks:-
+		Create a production environment
+		Lower the environment timeout
+		set dns alternative name
+
+** Each directory env is controlled from environment configuration file, directory env are stored in "/etc/environments/production/environment.conf" where production is our env so we created a subdirectory called production.
+
+4)Pupptet Configuration file controls many aspects of puppet 	/etc/puppet/puppet.conf contains 3 sections
+	MASTER	contains master specific config
+	AGENT	contains agent specific config
+	MAIN	any thing other than above
+
+	Example Puppet Config
+	
+	[main]
+	logdir=/var/log/puppet
+	rundir=/var/run/puppet
+	ssldir=$vardir/ssl
+
+	[master]
+	environments=$confdir/environments
+	basemodulepath=$confdir/modules:/opt/puppet/share/puppet/modules
+
+	[agent]								Puppet master runs as a puppet agent, you want to apply changes to puppet master itself.
+	classfile=$vardir/classes.txt
+	localconfig=$vardir/localconfig
+
+5) Puppet env setup
+	sudo mkdir -p /etc/puppet/environments/production/{modules,manifests}
+	cd /etc/puppet/environments/production/
+	vim environment.conf
+		modulepath = /etc/puppet/environments/production/modules
+		environment_timeout = 5s
+
+
+make puppet aware about the new env config
+
+[main]
+    dns_alt_names = puppet,puppetmaster,puppetcent.technotronix.com
+
+[master]
+    environmentpath = $confdir/environments
+    basemodulepath = $confdir/modules:/opt/puppet/share/modules
+
+set selinux to permissive
+
+6)create ssl certificates
+	puppet master --verbose --no-daemonize
+	
+	verify my going to /var/lib/puppet/ssl
+
+7) Installing apache passenger
+
+** Puppet nodes communicate to puppet master over http using an api, in default this http connection is terminated via webrick which is terrible for production so we need to use an altenative so apache http server is an perfect alternative. Apache is a web server it listens for tcp connection from puppet nodes on port 8140 but apache cannot natively run ruby application so we need to integrate it with something that something is passenger
+
+
+	Installing apache and someother required utils
+	sudo yum -y install httpd httpd-devel mod_ssl ruby-devel rubygems gcc gcc-c++ libcurl-devel openssl-devel
+	
+	Install rack and passenger using gem
+	gem install rack passenger
+	
+	Install passenger apache2 module
+	passenger-install-apache2-module
+
+
+   LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-5.0.21/buildout/apache2/mod_passenger.so
+   <IfModule mod_passenger.c>
+     PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-5.0.21
+     PassengerDefaultRuby /usr/bin/ruby
+   </IfModule>
+
+
+	Create directory for puppet master itself
+	mkdir -p /usr/share/puppet/rack/puppetmasterd/{public,tmp}
+
+	Copy the default file to puppet master dir
+	cp /usr/share/puppet/ext/rack/config.ru /usr/share/puppet/rack/puppetmasterd/
+	chown puppet:puppet /usr/share/puppet/rack/puppetmasterd/config.ru
+
+	Configure passenger
+	git clone https://github.com/benpiper/puppet-fundamentals-puppetmaster
+
+
+	puppet.conf
+
+	LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-5.0.21/buildout/apache2/mod_passenger.so
+	PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-5.0.21
+	PassengerDefaultRuby /usr/bin/ruby
+
+	The 5.0.21 should be the same
+
+        SSLCertificateFile      /var/lib/puppet/ssl/certs/puppetcent.technotronix.com.pem
+        SSLCertificateKeyFile   /var/lib/puppet/ssl/private_keys/puppetcent.technotronix.com.pem
+	save and exit
+	
+	cp puppetmaster.conf /etc/httpd/conf.d/puppetmaster.conf
+	
+	sudo service httpd start
+	chkconfig httpd on
+
+	Installation of puppet master is completed
+
+8)Installing the puppet agent on centos node
+
+	adding the puppet repository
+        sudo yum -y install http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
+ 
+	Install puppet agent
+	yum -y install puppet
+
+	make the agent aware about the server in /etc/puppet/puppet.conf in agent in agent section
+	server = puppetcent.technotronix.com
+
+	generate ssl certificates
+	puppet agent --verbose --no-daemonize --onetime
+
+9)Installing the puppet agent on ubuntu node
+	
+	wget https://apt.puppetlabs.com/puppetlabs-release-precise.deb
+	sudo dpkg -i puppetlabs-release-precise.deb
+	apt-get update
+	apt-get install puppet
+
+	Installation of puppet aget complete, This completes my setup.
+
+
+################################################
+Puppet testing
+
+Try and create a file my with time muing its content
+
+/etc/puppet/environments/production/manifests/nodes.pp
+
+
+node 'puppetcentcl1.technotronix.com' {
+    file { '/info':
+      ensure  =>  'present',
+      content =>  inline_template("Created by Puppet at <%= Time.now %>\n"),
+  }     
+}
+
+
+node 'puppetubucl.technotronix.com' {
+
+}
+
+###############
+Run the below given command on puppetcentcl1.technotronix.com
+
+puppet agent --verbose --no-daemonize --onetime
+
+###############
+
+ot@puppetcentcl1 ~]# puppet agent --verbose --no-daemonize --onetime
+Info: Retrieving pluginfacts
+Info: Retrieving plugin
+Info: Caching catalog for puppetcentcl1.technotronix.com
+Info: Applying configuration version '1446924685'
+Info: Computing checksum on file /info
+Info: /Stage[main]/Main/Node[puppetcentcl1.technotronix.com]/File[/info]: Filebucketed /info to puppet with sum 453073f9dd1a0618d8fad0f033b9ec0f
+Notice: /Stage[main]/Main/Node[puppetcentcl1.technotronix.com]/File[/info]/content: content changed '{md5}453073f9dd1a0618d8fad0f033b9ec0f' to '{md5}f6fe66506520de72dfb694a50c257cdd'
+Notice: Finished catalog run in 0.04 seconds
+
+The above output shows it got executed sucessfully
+
+################################################
+Incase if you want to get the original file again, puppet has a filebucket from which we can retrive the file
+
+puppet -l --bucket /var/lib/puppet/clientbucket/ restore /info d5f58feb62f5a21150934558d0f78ab5 ======================================================
+								this hash is from the log for the file when it was first created		   \
+																		   \
+																		   \			
+Nov  8 00:57:25 puppetcentcl1 puppet-agent[3847]: Caching catalog for puppetcentcl1.technotronix.com						   \		
+Nov  8 00:57:25 puppetcentcl1 puppet-agent[3847]: Applying configuration version '1446924444'							   \	
+Nov  8 00:57:25 puppetcentcl1 puppet-agent[3847]: (/Stage[main]/Main/Node[puppetcentcl1.technotronix.com]/File[/info]/ensure) created		   \		
+Nov  8 00:57:25 puppetcentcl1 puppet-agent[3847]: Creating state file /var/lib/puppet/state/state.yaml						   \	
+Nov  8 00:57:25 puppetcentcl1 puppet-agent[3847]: Finished catalog run in 0.03 seconds								   \	
+Nov  8 00:58:32 puppetcentcl1 puppet-agent[3978]: (/Stage[main]/Main/Node[puppetcentcl1.technotronix.com]/File[/info]/content) content changed '{md5}d5f58feb62f5a21150934558d0f78ab5' to '{md5}453073f9dd1a0618d8fad0f033b9ec0f'
+Nov  8 00:58:32 puppetcentcl1 puppet-agent[3978]: Finished catalog run in 0.04 seconds
+
+If you just want to view the file
+
+puppet -l --bucket /var/lib/puppet/clientbucket/ get /info d5f58feb62f5a21150934558d0f78ab5
+
+################################################
+Installing a package in both the servers and esuring its running
+
+ /etc/puppet/environments/production/manifests/nodes.pp
+
+
+node 'puppetcentcl1.technotronix.com' {
+    file { '/info':
+      ensure  =>  'present',
+      content =>  inline_template("Created by Puppet at <%= Time.now %>\n"),
+  }
+
+  package { 'ntp':
+        ensure => 'installed',
+  }
+ 
+  service { 'ntpd':
+        ensure => 'running',
+        enable => true,
+   }
+}
+
+
+node 'puppetubucl.technotronix.com' {
+   package { 'ntp':
+        ensure => 'installed',
+  }
+   service { 'ntp':
+        ensure => 'running',
+        enable => true,
+    }
+}
+#####
+this will start the ntp service on both the machine
+
+################################################
+Both the servers are of different os family their package names are different (centos uses ntpd and ubuntu uses ntp) so we need to mention this in the manifest, this can be avoided using puppet selectors.
+
+Below config uses puppet selectors
+
+/etc/puppet/environments/production/manifests/nodes.pp
+
+$ntpservice = $osfamily ? {
+ 'redhat'  => 'ntpd',
+  'debian' =>  'ntp',
+  default => 'ntp',
+}
+
+node 'puppetcentcl1.technotronix.com' {
+    file { '/info':
+      ensure  =>  'present',
+      content =>  inline_template("Created by Puppet at <%= Time.now %>\n"),
+  }
+
+  package { 'ntp':
+        ensure => 'installed',
+  }
+ 
+  service { $ntpservice:
+        ensure => 'running',
+        enable => true,
+   }
+}
+
+
+node 'puppetubucl.technotronix.com' {
+   package { 'ntp':
+        ensure => 'installed',
+  }
+   service { $ntpservice:
+        ensure => 'running',
+        enable => true,
+    }
+}
+################################################
+Classes
+In Puppet, classes are code blocks that can be called in a code elsewhere. Using classes allows you reuse Puppet code, and can make reading manifests easier.
+We have many repeatation in our manifest file, we can make use of puppet classes to avoihd repetation
+
+
+/etc/puppet/environments/production/manifests/nodes.pp
+
+node 'puppetcentcl1.technotronix.com' {
+   class { 'linux': }
+}
+
+node 'puppetubucl.technotronix.com' {
+   class { 'linux': }
+}
+
+class linux {
+$ntpservice = $osfamily ? {
+    'redhat' => 'ntpd',
+    'debian' =>  'ntp',
+     default => 'ntp',
+   }
+
+     file { '/info.txt':
+        ensure => 'present',
+        content =>  inline_template("Created by Puppet at <%= Time.now %>\n"),   
+     }
+     package { 'ntp':
+        ensure => 'installed',
+    }
+
+    service { $ntpservice:
+         ensure => 'running',
+         enable => true,
+     }   
+
+}
+################################################
+If we want to install three packages at once this can be done using variable array of puppet resources and including it in the class.
+
+class linux {
+     
+    $admintools = ['git', 'vim', 'screen']
+     package { $admintools:
+        ensure => 'installed',
+         }
+
+################################################
+Creating Puppet Modules
+
+cd /etc/puppet/environments/production/modules/
+
+command to generate puppet module
+
+sudo puppet module generate bhavesh-apache --environment production
+			     module name	only accessible to production environ
+
+
+Module Directory structure
+
+*Modulename
+-manifests 	Contains an init.pp file that is automatically loaded
+-files		Contains files that we need to push to puppet node only for static files
+-templates	Contains files with mixed static and dynamic content. Dynamic content modified based on custom variable and facts
+-lib		Contains custom facts Require ruby coding
+-facts.d	Contain external facts
+-tests		used for unit testing
+-spec
+
+
+By default when you create a module a init.pp file is created in manifest directory which contains our module class
+we can code within that class block and call the module as a class in our nodes.pp file
+
+################################################
+Conditional example
+
+if $osfamily == 'redhat' {
+	package { 'php-xml':
+	  ensure => 'present',
+	}
+}
+################################################
+Installing the apache module from puppet labs
+
+puppet module install puppetlabs-apache --modulepath /etc/puppet/environments/production/modules/
+
+class { '::apache':						::'apache': ensures that it starts after installation
+  docroot => '/var/www/html',
+  mpm_module => 'prefork',
+  subscribe => Package[$phpmysql],				subscribe:- any changes in php config apache will be restarted
+}
+
+class { '::apache::mod::php':} 					install mod_php defaults
+
+
+################################################
+Installing vcsrepo for integration with git
+
+vcsrepo { '/var/www/html':
+  ensure 	=> 'present',
+  provider	=> 'git',
+  source	=> '"githubrepo address"',
+  revision	=> 'revision name to be used',
+}
+
+################################################
+
+################################################
+
+Files are the most configured resources on a system, we manage them with the file type:
+
+file { 'httpd.conf':
+    # (namevar) The file path
+    path      => '/etc/httpd/conf/httpd.conf',  
+    # Define the file type and if it should exist:
+    # 'present','absent','directory','link'
+    ensure    => 'present',
+    # Url from where to retrieve the file content
+    source    => 'puppet://[puppetfileserver]/<share>/path',
+    # Actual content of the file, alternative to source
+    # Typically it contains a reference to the template function
+    content   => 'My content',
+    # Typical file's attributes
+    owner     => 'root',
+    group     => 'root',
+    mode      => '0644',
+    # The sylink target, when ensure => link
+    target    => '/etc/httpd/httpd.conf',
+    # Whether to recursively manage a directory (when ensure => directory)
+    recurse   => true,
+}
+
+
+################################################
+exec { 'get_my_file':
+    # (namevar) The command to execute
+    command   => "wget http://mysite/myfile.tar.gz -O /tmp/myfile.tar.gz',
+    # The search path for the command. Must exist when command is not absolute
+    # Often set in Exec resource defaults
+    path      => '/sbin:/bin:/usr/sbin:/usr/bin',
+    # A file created by the command. It if exists, the command is not executed
+    creates   => '/tmp/myfile.tar.gz',
+    # A command or an array of commands, if any of them returns an error
+    # the command is not executed
+    onlyif    => 'ls /tmp/myfile.tar.gz && false',
+    # A command or an array of commands, if any of them returns an error
+    # the command IS executed
+    unless    => 'ls /tmp/myfile.tar.gz',
+}
+
+################################################
+Managing dependencies - before | notify
+
+
+package { 'exim':
+  before => File['exim.conf'],  
+}
+
+file { 'exim.conf':
+  notify => Service['exim'],
+}
+
+service { 'exim':
+}
+
+
+################################################
+
+package { 'exim':
+}
+
+file { 'exim.conf':
+  require => Package['exim'],
+}
+
+service { 'exim':
+  subscribe => File['exim.conf'],
+}
+
+
+################################################
+selector for variable's assignement
+
+$package_name = $osfamily ? {
+   'RedHat' => 'httpd',
+   'Debian' => 'apache2',
+   default  => undef,
+ }
+
+case
+
+case $::osfamily {
+   'Debian': { $package_name = 'apache2' }
+   'RedHat': { $package_name = 'httpd' }
+   default: { notify { "Operating system $::operatingsystem not supported" } }
+ }
+
+if elsif else
+
+if $::osfamily == 'Debian' {
+   $package_name = 'apache2'
+ } elsif $::osfamily == 'RedHat' {
+   $package_name = 'httpd'
+ } else {
+   notify { "Operating system $::operatingsystem not supported" }
+ }
+################################################
+sudo puppet cert sign host1.nyc2.example.com     Sign A Request
+
+If you want to sign all of the current requests, use the -all option, like so:
+
+sudo puppet cert sign --all
+
+sudo puppet cert clean hostname 		Revoke Certificates
+
+sudo puppet cert list --all			View All Signed Requests
+
+sudo puppet apply /etc/puppet/modules/test/init.pp
+
+puppet resource --types				To list all resource types
+
+
+From the shell the command line interface:
+
+puppet describe file
+
+For the full list of available descriptions try:
+
+puppet describe --list
+
+
+Use puppet resource to interrogate the RAL:
+
+puppet resource user
+
+puppet resource user root
+
+puppet resource package
+
+puppet resource service
+
+
+To view all or a specific configuration setting:
+
+puppet config print all
+puppet config print modulepath
+
+
+################################################
+
+################################################
+#Top Command output:
+1.1 Uptime and Load Averages:
+
+top - 21:32:51 up 10 min,  2 users,  load average: 0.00, 0.27, 0.32
+
+At the top of top command is displayed the output similar to uptime command.
+
+The fields display:
+* current time
+* the time your system is been up
+* number of users logged in
+* load average of 5, 10 and 15 minutes respectively.
+This uptime display can be toggled with 'l' command.
+1.2 Tasks:
+
+Tasks: 155 total,   1 running, 154 sleeping,   0 stopped,   0 zombie
+
+The second line shows summary of tasks or processes. The processes can be in different states. It shows total number of the processes. Out of these, the processes can be running, sleeping, stopped or in zombie (zombie is the state of a process state, These process summary can be toggled with 't' command.
+1.3 CPU States:
+
+%Cpu(s):  9.9 us,  3.0 sy,  0.0 ni, 85.8 id,  1.3 wa,  0.0 hi,  0.0 si,  0.0 st
+
+Next is shown the CPU state. Here, %age of CPU time in different modes is shown. The meaning of different CPU times are:
+
+ us, user: CPU time in running (un-niced) user processes
+* sy, system: CPU time in running kernel processes
+* ni, niced: CPU time in running niced user processes
+* wa, IO wait: CPU time waiting for IO completion
+* hi: CPU time serving hardware interrupts
+* si: CPU time serving software interrupts
+* st: CPU time stolen for this vm by the hipervisor.
+
+This can be toggled with 't' command.
+
+ 
+1.4 Memory Usage:
+
+KiB Mem:   1025524 total,   930332 used,    95192 free,    35924 buffers
+
+KiB Swap:  1045500 total,        0 used,  1045500 free.   558328 cached Mem
+
+Next two lines show memory usage, somewhat like 'free' command. 1st of these lines is for physical memory and the second for virtual memory (swap space).
+The physical memory is displayed as: total available memory, used memory, free memory, and memory used for buffers
+Similarly, swap reflects: total, used, free and cached swap space.
+The memory can be toggled with 'm' command.
+1.5 Fields/Columns:
+
+PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND
+
+PID
+The Process ID, to uniquely identify a processes.
+
+USER
+The effective user name of the owner of the processes.
+
+PR
+The scheduling priority of the process. Some values in this field are 'rt'. It means that the process is running under real-time.
+
+NI
+The nice value of the process. Lower values mean higher priority.
+
+VIRT
+The amount of virtual memory used by the process.
+
+RES
+The resident memory size. Resident memory is the amount of non-swapped physical memory a task is using.
+
+SHR
+SHR is the shared memory used by the process.
+
+S
+This is the process status. It can have one of the following values:
+
+D - uninterruptible sleep
+R - running
+S - sleeping
+T - traced or stopped
+Z - zombie
+
+%CPU
+It is the percentage of CPU time the task has used since last update.
+
+%MEM
+Percentage of available physical memory used by the process.
+
+TIME+
+The total CPU time the task has used since it started, with precision upto hundredth of a second.
+
+COMMAND
+The command which was used to start the process.
+
+There are many other outputs which are not displayed by default which can display information about page faults, effective group and group ID of the process, and many more.
+
+################################################
+
+Learning memcache
+
+################################################
+
+memcstat --server localhost
+
+memccp --server UbuntuPuppetClient.technotronix.com,puppetubucl.technotronix.com product*
+
+mc = memcache.Client(['192.168.122.31:11211','192.168.122.67:11211'])
+
+mc.get("fname")
